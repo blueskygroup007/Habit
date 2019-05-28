@@ -1,10 +1,12 @@
 package com.bluesky.habit.habit_list;
 
+import android.os.Binder;
 import android.util.Log;
 
 import com.bluesky.habit.data.Habit;
 import com.bluesky.habit.data.source.HabitsDataSource;
 import com.bluesky.habit.data.source.HabitsRepository;
+import com.bluesky.habit.service.ForegroundService;
 import com.bluesky.habit.util.EspressoIdlingResource;
 
 import java.util.ArrayList;
@@ -20,15 +22,29 @@ public class HabitListPresenter implements HabitListContract.Presenter {
     private static final String TAG = "HabitListPresenter";
     private final HabitsRepository mRepository;
 
-    private final HabitListContract.View mView;
+    private HabitListContract.View mView;
 
 
     private boolean mFirstLoad = true;
+    private ForegroundService.MyBinder mBinder;
 
     public HabitListPresenter(HabitsRepository repository, HabitListContract.View view) {
         mRepository = repository;
         mView = view;
         mView.setPresenter(this);
+    }
+
+    @Override
+    public void setService(Binder service) {
+        //todo 这里强转,是否要判断一下
+        mBinder = (ForegroundService.MyBinder) service;
+    }
+
+    @Override
+    public void startHabitAlarm(Habit habit) {
+        if (mBinder != null) {
+            mBinder.doStartHabit(habit);
+        }
     }
 
     @Override
@@ -112,4 +128,12 @@ public class HabitListPresenter implements HabitListContract.Presenter {
     public void start() {
         loadHabits(false);
     }
+
+    @Override
+    public void setView(HabitListContract.View view) {
+        mView = view;
+        mView.setPresenter(this);
+    }
+
+
 }

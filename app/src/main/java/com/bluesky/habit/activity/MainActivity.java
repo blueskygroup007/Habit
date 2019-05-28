@@ -1,7 +1,11 @@
 package com.bluesky.habit.activity;
 
+import android.content.ComponentName;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -13,6 +17,8 @@ import com.bluesky.habit.habit_list.HabitFragment;
 import com.bluesky.habit.habit_list.HabitListPresenter;
 import com.bluesky.habit.habit_list.dummy.DummyContent;
 import com.bluesky.habit.mine.MineFragment;
+import com.bluesky.habit.service.ForeContract;
+import com.bluesky.habit.service.ForegroundService;
 import com.bluesky.habit.statistics.StatisticsFragment;
 import com.bluesky.habit.util.Injection;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -29,6 +35,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener, HabitFragment.OnListFragmentInteractionListener {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     private Toolbar mToolbar;
     private TextView mTextMessage;
     private FrameLayout mContainer;
@@ -36,6 +43,20 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
     private HabitListPresenter mPresenter;
 
+    ServiceConnection mConn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.e(TAG, "onServiceConnected被回调了...");
+
+            ForegroundService.MyBinder mBinder = (ForegroundService.MyBinder) service;
+            mPresenter.setService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.e(TAG, "onServiceDisconnected被回调了...");
+        }
+    };
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -111,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         //创建presenter
         //todo 这里的context使用了getApplicationContext
         mHabitFragment = HabitFragment.newInstance(5);
-        mPresenter=new HabitListPresenter(Injection.provideTasksRepository(getApplicationContext()), mHabitFragment);
+        mPresenter = new HabitListPresenter(Injection.provideTasksRepository(getApplicationContext()), mHabitFragment);
         mStatisticsFragment = StatisticsFragment.newInstance("param 1", "param 2");
         mDiscoverFragment = DiscoverFragment.newInstance("param 1", "param 2");
         mMineFragment = MineFragment.newInstance("param 1", "param 2");

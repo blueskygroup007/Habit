@@ -1,5 +1,7 @@
 package com.bluesky.habit.habit_list;
 
+import android.os.Binder;
+
 import com.bluesky.habit.base.BasePresenter;
 import com.bluesky.habit.base.BaseView;
 import com.bluesky.habit.data.Habit;
@@ -12,8 +14,15 @@ import java.util.List;
  * Description:
  */
 public interface HabitListContract {
-    interface Presenter extends BasePresenter {
+    interface Presenter extends BasePresenter<View> {
 
+        /**
+         * 将连接前台service返回的Binder给P
+         * @param service
+         */
+        void setService(Binder service);
+
+        void startHabitAlarm(Habit habit);
         /**
          * 从网络加载所有habit数据
          * todo 重点备忘:这里没有返回值,因为方法的实现中,由repository来真正获取数据,并完成成功/失败的回调
