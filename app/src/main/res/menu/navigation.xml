@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_habit_list"
+        android:icon="@drawable/ic_format_list_bulleted_black_24dp"
+        android:title="@string/title_habit_list" />
+
+    <item
+        android:id="@+id/navigation_statistics"
+        android:icon="@drawable/ic_insert_chart_black_24dp"
+        android:title="@string/title_statistics" />
+
+    <item
+        android:id="@+id/navigation_discover"
+        android:icon="@drawable/ic_cloud_black_24dp"
+        android:title="@string/title_discover" />
+    <item
+        android:id="@+id/navigation_mine"
+        android:icon="@drawable/ic_person_black_24dp"
+        android:title="@string/title_mine" />
+</menu>

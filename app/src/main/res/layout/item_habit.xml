@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/hight_item_huge"
+    android:background="@drawable/touch_feedback"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/padding_list_item"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/padding_list_item">
+
+    <ProgressBar
+        android:id="@+id/pb_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        tools:progress="20" />
+
+    <Switch
+        android:id="@+id/switch_completed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="center_vertical" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toLeftOf="@id/switch_completed"
+        android:layout_toRightOf="@id/pb_time">
+
+        <ImageView
+            android:id="@+id/iv_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark"
+            tools:src="@drawable/ic_pool_black_24dp" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_toRightOf="@id/iv_icon"
+            android:background="@color/colorPrimaryDark"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            tools:text="定时喝水" />
+
+        <TextView
+            android:id="@+id/tv_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_title"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_toRightOf="@id/iv_icon"
+            android:background="@color/colorPrimaryDark"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            tools:text="半小时喝水一次,每次200ML." />
+
+        <ProgressBar
+            android:id="@+id/pb_number"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+
+            tools:progress="50" />
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

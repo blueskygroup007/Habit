@@ -1,0 +1,50 @@
+<resources>
+    <string name="app_name">兔子习惯</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">用户名</string>
+    <string name="nav_header_subtitle">用户签名</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">设置</string>
+    <string name="menu_filter">类别</string>
+    <string name="menu_clear">清除已终结</string>
+    <string name="menu_refresh">刷新</string>
+    <string name="nav_all">所有</string>
+    <string name="nav_active">激活</string>
+    <string name="nav_completed">已终结</string>
+
+    <string name="no_habits_all">没有任何习惯!加号按钮添加!</string>
+    <string name="no_habits_active">没有激活的习惯!</string>
+    <string name="no_habits_completed">没有终结的习惯!</string>
+    <string name="no_habits_add">添加一个习惯.</string>
+
+    <string name="habit_marked_complete">习惯被终结</string>
+    <string name="habit_marked_active">习惯被激活</string>
+    <string name="loading_habits_error">取出习惯时出错...</string>
+    <string name="completed_habits_cleared">终结所有习惯</string>
+
+    <string name="label_all">所有习惯</string>
+    <string name="label_active">活动习惯</string>
+    <string name="label_completed">已完成习惯</string>
+
+    <string name="successfully_saved_habit_message">成功保存</string>
+    <string name="list_title">习惯任务列表</string>
+    <string name="statistics_title">统计图表</string>
+    <string name="title_hint">标题</string>
+    <string name="description_hint">输入习惯简称.</string>
+    <string name="empty_habit_message">习惯不能为空</string>
+    <string name="text_goto_main">进入主界面</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="title_habit_list">习惯列表</string>
+    <string name="title_statistics">图表</string>
+    <string name="title_discover">发现</string>
+    <string name="title_mine">我的</string>
+    <string name="title_fragment_discover">这是发现页面</string>
+    <string name="title_fragment_mine">这是我的页面</string>
+    <string name="title_fragment_statistics">这是图表页面</string>
+    <string name="title_fragment_list">这是习惯列表页面</string>
+    <string name="title_activity_main">兔子习惯</string>
+
+</resources>

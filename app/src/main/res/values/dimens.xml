@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="hight_item_small">16dp</dimen>
+    <dimen name="hight_item_normal">32dp</dimen>
+    <dimen name="hight_item_large">64dp</dimen>
+    <dimen name="hight_item_huge">96dp</dimen>
+
+    <!--定义一系列尺寸-->
+    <dimen name="x1">1dp</dimen>
+    <dimen name="x2">2dp</dimen>
+    <dimen name="x3">4dp</dimen>
+    <dimen name="x4">8dp</dimen>
+    <dimen name="x5">16dp</dimen>
+    <dimen name="x6">32dp</dimen>
+    <dimen name="x7">48dp</dimen>
+    <dimen name="x8">64dp</dimen>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="nav_header_vertical_spacing">8dp</dimen>
+    <dimen name="nav_header_height">176dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
+
+    <!--专项尺寸-->
+    <dimen name="padding_list_item">8dp</dimen>
+    <dimen name="margin_activity_vertical">16dp</dimen>
+
+    <dimen name="font_small">12sp</dimen>
+    <dimen name="font_normal">16sp</dimen>
+    <dimen name="font_large">24sp</dimen>
+    <dimen name="font_huge">32sp</dimen>
+
+</resources>
