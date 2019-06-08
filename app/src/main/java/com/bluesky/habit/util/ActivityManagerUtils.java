@@ -29,13 +29,13 @@ public class ActivityManagerUtils {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> serviceInfoList = manager.getRunningServices(200);
         if (serviceInfoList.size() <= 0) {
-            Log.e(TAG, "---------->后台服务数量为空");
+            LogUtils.e(TAG, "---------->后台服务数量为空");
             return false;
         }
         for (ActivityManager.RunningServiceInfo info : serviceInfoList) {
-            Log.e(TAG, "---------->后台服务的name=" + info.service.getShortClassName());
+            LogUtils.e(TAG, "---------->后台服务的name=" + info.service.getShortClassName());
             if (info.service.getShortClassName().contains(serviceName)) {
-                Log.e(TAG, "---------->后台服务ForeService找到啦-------------------!!!");
+                LogUtils.e(TAG, "---------->后台服务ForeService找到啦-------------------!!!");
 
                 return true;
             }

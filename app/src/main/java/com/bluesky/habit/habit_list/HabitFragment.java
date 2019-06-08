@@ -20,6 +20,7 @@ import com.bluesky.habit.data.source.HabitsDataSource;
 import com.bluesky.habit.data.source.HabitsRepository;
 import com.bluesky.habit.habit_list.dummy.DummyContent.DummyItem;
 import com.bluesky.habit.util.Injection;
+import com.bluesky.habit.util.LogUtils;
 import com.suke.widget.SwitchButton;
 
 import java.util.ArrayList;
@@ -146,7 +147,7 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
             @Override
             public void onHabitsLoaded(List<Habit> habits) {
                 mAdapter.replaceData(habits);
-                Log.e(TAG, habits.toString());
+                LogUtils.e(TAG, habits.toString());
             }
 
             @Override

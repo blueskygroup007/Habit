@@ -49,12 +49,12 @@ public class AlarmClockPresenter implements ForeContract.ForePresenter {
 
     @Override
     public void startAlarm(Alarm alarm) {
-        Log.e(TAG, "启动Alarm....");
+        LogUtils.e(TAG, "启动Alarm....");
 
         mModel.getAlarm(new AlarmModel.AlarmDataCallBack() {
             @Override
             public void onSuccess(Alarm alarm) {
-                Log.e(TAG, "alarm数据=" + alarm.toString());
+                LogUtils.e(TAG, "alarm数据=" + alarm.toString());
 
                 /*
                  * 当activity被回收时,MainActivity.AlarmReceiver这个广播接收者无法启动
@@ -76,7 +76,7 @@ public class AlarmClockPresenter implements ForeContract.ForePresenter {
     }
 
     private void startAccService(Context context) {
-        Log.e(TAG, "启动了sensor监听....");
+        LogUtils.e(TAG, "启动了sensor监听....");
 
         if (mService == null) {
             mService = new Intent(context, AccelerationService.class);
@@ -89,7 +89,7 @@ public class AlarmClockPresenter implements ForeContract.ForePresenter {
 
     @Override
     public void stopAlarm(Alarm alarm) {
-        Log.e(TAG, "停止Alarm...");
+        LogUtils.e(TAG, "停止Alarm...");
         stopAccService();
         mView.closeAlarmDialog();
         setVibrator(false);
@@ -103,16 +103,16 @@ public class AlarmClockPresenter implements ForeContract.ForePresenter {
 
     @Override
     public void pauseAlarm(Alarm alarm) {
-        Log.e(TAG, "暂停Alarm...");
+        LogUtils.e(TAG, "暂停Alarm...");
 
         AlarmUtils.cancelAlarm(mContext, AlarmClockReceiver.class);
         mRemainMillis = alarm.getInterval() - (System.currentTimeMillis() - mStartMillis);
-        Log.e(TAG, "剩余时间是:" + mRemainMillis / 1000 + "秒");
+        LogUtils.e(TAG, "剩余时间是:" + mRemainMillis / 1000 + "秒");
     }
 
     @Override
     public void onAlarmTimeIsUp(Alarm alarm) {
-        Log.e(TAG, "Alarm计时到期...");
+        LogUtils.e(TAG, "Alarm计时到期...");
 
         mView.showAlarmDialog();
         setVibrator(true);
@@ -127,7 +127,7 @@ public class AlarmClockPresenter implements ForeContract.ForePresenter {
 
     @Override
     public void start() {
-        Log.e(TAG, "Presenter.start()...");
+        LogUtils.e(TAG, "Presenter.start()...");
 
         /*
          *这里应该是放置程序启动初期,初始化界面,加载列表等操作

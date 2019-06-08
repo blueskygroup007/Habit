@@ -21,6 +21,7 @@ import com.bluesky.habit.service.ForeContract;
 import com.bluesky.habit.service.ForegroundService;
 import com.bluesky.habit.statistics.StatisticsFragment;
 import com.bluesky.habit.util.Injection;
+import com.bluesky.habit.util.LogUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -46,15 +47,15 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     ServiceConnection mConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.e(TAG, "onServiceConnected被回调了...");
+            LogUtils.e(TAG, "onServiceConnected被回调了...");
 
-            ForegroundService.MyBinder mBinder = (ForegroundService.MyBinder) service;
-            mPresenter.setService();
+            ForegroundService.ForeControlBinder mBinder = (ForegroundService.ForeControlBinder) service;
+//            mPresenter.setService();
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            Log.e(TAG, "onServiceDisconnected被回调了...");
+            LogUtils.e(TAG, "onServiceDisconnected被回调了...");
         }
     };
 

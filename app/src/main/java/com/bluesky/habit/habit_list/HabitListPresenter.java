@@ -26,7 +26,7 @@ public class HabitListPresenter implements HabitListContract.Presenter {
 
 
     private boolean mFirstLoad = true;
-    private ForegroundService.MyBinder mBinder;
+    private ForegroundService.ForeControlBinder mBinder;
 
     public HabitListPresenter(HabitsRepository repository, HabitListContract.View view) {
         mRepository = repository;
@@ -37,7 +37,7 @@ public class HabitListPresenter implements HabitListContract.Presenter {
     @Override
     public void setService(Binder service) {
         //todo 这里强转,是否要判断一下
-        mBinder = (ForegroundService.MyBinder) service;
+        mBinder = (ForegroundService.ForeControlBinder) service;
     }
 
     @Override

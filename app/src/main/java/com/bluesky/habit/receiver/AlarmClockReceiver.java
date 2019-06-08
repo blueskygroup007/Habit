@@ -17,7 +17,7 @@ public class AlarmClockReceiver extends BroadcastReceiver {
         // TODO: This method is called when the BroadcastReceiver is receiving
         // an Intent broadcast.
 //        throw new UnsupportedOperationException("Not yet implemented");
-        Log.e(TAG, "AlarmClockReceiver接收到了广播");
+        LogUtils.e(TAG, "AlarmClockReceiver接收到了广播");
 /*        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
         dialogBuilder.setTitle("提示");
         dialogBuilder.setMessage("这是在BroadcastReceiver弹出的对话框。");

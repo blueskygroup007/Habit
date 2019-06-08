@@ -19,6 +19,7 @@ import android.widget.Button;
 
 import com.bluesky.habit.R;
 import com.bluesky.habit.service.ForegroundService;
+import com.bluesky.habit.util.LogUtils;
 
 public class AlertDialogActivity extends Activity {
     public static final String TAG = AlertDialogActivity.class.getSimpleName();
@@ -55,7 +56,7 @@ public class AlertDialogActivity extends Activity {
 
         //此方法用来注册，只有注册过才会生效，参数：SensorEventListener的实例，Sensor的实例，更新速率
         sensorManager.registerListener(mLisenter, mSensor, SensorManager.SENSOR_DELAY_FASTEST);
-        Log.e(TAG, "加速度监听启动了");
+        LogUtils.e(TAG, "加速度监听启动了");
 
     }
 
@@ -70,7 +71,7 @@ public class AlertDialogActivity extends Activity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.e(TAG, "自动延时关闭AlertDialogActivity");
+                LogUtils.e(TAG, "自动延时关闭AlertDialogActivity");
                 finish();
             }
         }, 5000);
@@ -81,7 +82,7 @@ public class AlertDialogActivity extends Activity {
         super.onDestroy();
         setVibrator(false);
         sensorManager.unregisterListener(mLisenter, mSensor);
-        Log.e(TAG, "加速度监听停止了");
+        LogUtils.e(TAG, "加速度监听停止了");
     }
 
     class AccelerometerLisenter implements SensorEventListener {
@@ -94,7 +95,7 @@ public class AlertDialogActivity extends Activity {
                 float valueY = Math.abs(event.values[1]);
                 float valueZ = Math.abs(event.values[2]);
                 if (valueX > RADIO_ACC || valueY > RADIO_ACC || valueZ > RADIO_ACC) {
-                    Log.e(TAG, "传感器数据:" + "X=" + valueX + " Y=" + valueY + " Z=" + valueZ);
+                    LogUtils.e(TAG, "传感器数据:" + "X=" + valueX + " Y=" + valueY + " Z=" + valueZ);
                     //监测到摇一摇反馈
                     //1.通知Presenter,本次闹钟标记为已实现.关闭提示页面
                     //2.P操作M,标记数据库
@@ -119,10 +120,10 @@ public class AlertDialogActivity extends Activity {
 
     private void setVibrator(boolean on) {
         if (on) {
-            Log.e(TAG, "开始震动");
+            LogUtils.e(TAG, "开始震动");
 
         } else {
-            Log.e(TAG, "停止震动");
+            LogUtils.e(TAG, "停止震动");
 
         }
 
