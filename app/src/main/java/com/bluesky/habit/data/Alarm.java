@@ -1,6 +1,10 @@
 package com.bluesky.habit.data;
 
+import android.net.Uri;
+
 import androidx.room.Entity;
+
+import java.io.Serializable;
 
 /**
  * @author BlueSky
@@ -8,106 +12,65 @@ import androidx.room.Entity;
  * Description:
  */
 @Entity
-public class Alarm implements Cloneable {
-    private int count_number;
-    private int current_number;
-    private int interval_time;
-    private int current_time;
-    private int total_time;
-    private int style;
-    private int feedback;
+public class Alarm implements Serializable {
+    /**
+     * 预设总提示次数(统计用)
+     */
 
-    public Alarm(int count_number, int current_number, int interval_time, int current_time, int total_time, int style, int feedback) {
-        this.count_number = count_number;
-        this.current_number = current_number;
-        this.interval_time = interval_time;
-        this.current_time = current_time;
-        this.total_time = total_time;
-        this.style = style;
-        this.feedback = feedback;
-    }
+    private int numberCount;
+    /**
+     * 当前提示计数
+     */
 
-    public Alarm(Alarm alarm) {
-        this.count_number = alarm.getCount_number();
-        this.current_number = alarm.getCurrent_number();
-        this.interval_time = alarm.getInterval_time();
-        this.current_time = alarm.getCurrent_time();
-        this.total_time = alarm.getTotal_time();
-        this.style = alarm.getStyle();
-        this.feedback = alarm.getFeedback();
-    }
+    private int numberCurrent;
+    /**
+     * 闹钟间隔
+     */
 
-    public int getCount_number() {
-        return count_number;
-    }
+    private int alarmInterval;
+    /**
+     * 当前闹钟进行时间
+     */
 
-    public void setCount_number(int count_number) {
-        this.count_number = count_number;
-    }
+    private int alarmCurrent;
+    /**
+     * 闹钟总时长(统计用)
+     */
 
-    public int getCurrent_number() {
-        return current_number;
-    }
+    private int alarmTotal;
+    /**
+     * 闹钟报警方式(声,光,震)
+     */
+    private int wakeStyle;
+    /**
+     * 反馈方式(摇一摇,翻转[重力+距离],遮挡光线)
+     */
+    private int feedbackStyle;
 
-    public void setCurrent_number(int current_number) {
-        this.current_number = current_number;
-    }
+    /**
+     * 铃声uri
+     */
+    private Uri ringTone;
 
-    public int getInterval_time() {
-        return interval_time;
-    }
+    /**
+     * 渐强音量
+     */
+    private boolean increasingVolume;
 
-    public void setInterval_time(int interval_time) {
-        this.interval_time = interval_time;
-    }
+    /**
+     * 闹钟状态(active,inactive)
+     */
+    private boolean isActive = true;
 
-    public int getCurrent_time() {
-        return current_time;
-    }
+    /**
+     * 闹钟重复(星期1-7)
+     */
+    private int repeatDay;
+    /**
+     * 震动方式
+     */
+    private int vibrateStyle;
 
-    public void setCurrent_time(int current_time) {
-        this.current_time = current_time;
-    }
 
-    public int getTotal_time() {
-        return total_time;
-    }
-
-    public void setTotal_time(int total_time) {
-        this.total_time = total_time;
-    }
-
-    public int getStyle() {
-        return style;
-    }
-
-    public void setStyle(int style) {
-        this.style = style;
-    }
-
-    public int getFeedback() {
-        return feedback;
-    }
-
-    public void setFeedback(int feedback) {
-        this.feedback = feedback;
-    }
-
-    @Override
-    public String toString() {
-        return "Alarm{" +
-                "count_number=" + count_number +
-                ", current_number=" + current_number +
-                ", interval_time=" + interval_time +
-                ", current_time=" + current_time +
-                ", total_time=" + total_time +
-                ", style=" + style +
-                ", feedback=" + feedback +
-                '}';
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
+    public enum AlertStyle{}
 }

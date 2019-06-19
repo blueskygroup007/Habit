@@ -9,7 +9,6 @@ public interface ForeContract {
     interface ForePresenter extends BasePresenter {
 
 
-
         /**
          * 启动闹钟
          *
@@ -38,6 +37,10 @@ public interface ForeContract {
          */
         void onAlarmTimeIsUp(Alarm alarm);
 
+        void onAlarmAccept(Alarm alarm);
+
+        void onAlarmSkip(Alarm alarm);
+
         /**
          * 停止加速度监听服务
          */
@@ -50,15 +53,15 @@ public interface ForeContract {
 
 
 
-/*    interface ForeAlertView extends BaseView<ForePresenter> {
-        *//**
-         * 显示闹钟到期提醒对话框
-         *//*
+    /*    interface ForeAlertView extends BaseView<ForePresenter> {
+     *//**
+     * 显示闹钟到期提醒对话框
+     *//*
         void showAlarmDialog();
 
         *//**
-         * 关闭闹钟到期提醒对话框
-         *//*
+     * 关闭闹钟到期提醒对话框
+     *//*
         void closeAlarmDialog();
 
         *//*

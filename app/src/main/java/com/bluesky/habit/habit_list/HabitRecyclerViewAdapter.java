@@ -81,10 +81,10 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<HabitRecycler
             habit.setAlarm(alarm);
         }
 
-        holder.pb_time.setMax(habit.getAlarm().getInterval_time());
-        holder.pb_time.setProgress(habit.getAlarm().getCurrent_time());
-        holder.pb_number.setMax(habit.getAlarm().getCount_number());
-        holder.pb_number.setProgress(habit.getAlarm().getCurrent_number());
+        holder.pb_time.setMax(habit.getAlarm().getAlarmInterval());
+        holder.pb_time.setProgress(habit.getAlarm().getAlarmCurrent());
+        holder.pb_number.setMax(habit.getAlarm().getNumberCount());
+        holder.pb_number.setProgress(habit.getAlarm().getNumberCurrent());
     }
 
     @Override

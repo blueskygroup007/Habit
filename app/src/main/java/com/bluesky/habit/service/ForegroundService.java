@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.bluesky.habit.R;
 import com.bluesky.habit.activity.MainActivity;
+import com.bluesky.habit.data.Alarm;
 import com.bluesky.habit.data.Habit;
 import com.bluesky.habit.habit_list.HabitListContract;
 import com.bluesky.habit.habit_list.HabitListPresenter;
@@ -43,11 +44,14 @@ import androidx.core.app.NotificationCompat;
 public class ForegroundService extends Service {
     private static final String TAG = ForegroundService.class.getSimpleName();
     public static final int ID = 12346;
+    private static final String EXTRA_HABIT = "extra_habit";
     private ForeAlarmPresenter mPresenter;
 
     private List<OnControlListener> mOnControlListeners = new ArrayList<>();
 
-    /** todo 这里主要是响应客户端的复杂指令 */
+    /**
+     * todo 这里主要是响应客户端的复杂指令
+     */
     public class ForeControlBinder extends Binder {
 
         /**
@@ -93,6 +97,7 @@ public class ForegroundService extends Service {
     public static final String ACTION_PLAY = "com.bluesky.habit.action.PLAY";
     public static final String ACTION_PAUSE = "com.bluesky.habit.action.PAUSE";
     public static final String ACTION_STOP = "com.bluesky.habit.action.STOP";
+    public static final String ACTION_TIMEUP = "com.bluesky.habit.action.TIMEUP";
     public static final String ACTION_ACCEPT = "com.bluesky.habit.action.ACCEPT";
     public static final String ACTION_SKIP = "com.bluesky.habit.action.SKIP";
     public static final String ACTION_DISMISS = "com.bluesky.habit.action.DISMISS";
@@ -100,6 +105,7 @@ public class ForegroundService extends Service {
     /**
      * 这里是被客户端通过发送intent,设置action来启动的方法.
      * todo 这里主要是接收简单指令
+     *
      * @param intent
      * @param flags
      * @param startId
@@ -108,21 +114,49 @@ public class ForegroundService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getAction();
+        Habit habit = intent.getParcelableExtra(EXTRA_HABIT);
+        Alarm alarm = habit.getAlarm();
         switch (action) {
             case ACTION_PLAY:
-                doPlay();
+                mPresenter.startAlarm(alarm);
+                for (OnControlListener listener : mOnControlListeners
+                ) {
+                    listener.onHabitStarted();
+                }
                 break;
             case ACTION_PAUSE:
-                doPause();
+                mPresenter.pauseAlarm(alarm);
+                for (OnControlListener listener : mOnControlListeners
+                ) {
+                    listener.onHabitPaused();
+                }
                 break;
             case ACTION_STOP:
-                doStop();
+                mPresenter.stopAlarm(alarm);
+                for (OnControlListener listener : mOnControlListeners
+                ) {
+                    listener.onHabitStopped();
+                }
                 break;
             case ACTION_ACCEPT:
-                doAccept();
-                break;
+                mPresenter.onAlarmAccept(alarm);
+                for (OnControlListener listener : mOnControlListeners
+                ) {
+                    listener.onHabitAccepted();
+                }
             case ACTION_SKIP:
-                doSkip();
+                mPresenter.onAlarmSkip(alarm);
+                for (OnControlListener listener : mOnControlListeners
+                ) {
+                    listener.onHabitSkipped();
+                }
+                break;
+            case ACTION_TIMEUP:
+                mPresenter.onAlarmSkip(alarm);
+                for (OnControlListener listener : mOnControlListeners
+                ) {
+                    listener.onHabitTimeUp();
+                }
                 break;
             case ACTION_DISMISS:
                 doDissmiss();
@@ -145,26 +179,6 @@ public class ForegroundService extends Service {
     private void doDissmiss() {
         stopForeground(true);
         LogUtils.e(TAG, "service被停止前台了...................");
-    }
-
-    private void doSkip() {
-
-    }
-
-    private void doAccept() {
-
-    }
-
-    private void doStop() {
-
-    }
-
-    private void doPause() {
-
-    }
-
-    private void doPlay() {
-
     }
 
 

@@ -318,15 +318,15 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
             //holder.pb_time.setMax(habit.getAlarm().getInterval_time());
             //holder.pb_time.setProgress(habit.getAlarm().getCurrent_time());
             holder.pb_time.setDefText("当前:");
-            holder.pb_time.setStepCountText(habit.getAlarm().getCurrent_time() + "");
-            holder.pb_time.setPercentage(habit.getAlarm().getCurrent_time() * 100 / habit.getAlarm().getInterval_time());
+            holder.pb_time.setStepCountText(habit.getAlarm().getAlarmCurrent() + "");
+            holder.pb_time.setPercentage(habit.getAlarm().getAlarmCurrent() * 100 / habit.getAlarm().getAlarmInterval());
 
             holder.switch_completed.setChecked(habit.isCompleted());
             holder.iv_icon.setImageResource(habit.getIcon());
             holder.tv_title.setText(habit.getTitle());
             holder.tv_description.setText(habit.getDescription());
-            holder.pb_number.setMax(habit.getAlarm().getCount_number());
-            holder.pb_number.setProgress(habit.getAlarm().getCurrent_number());
+            holder.pb_number.setMax(habit.getAlarm().getNumberCount());
+            holder.pb_number.setProgress(habit.getAlarm().getNumberCurrent());
             //修改item的背景变化
             convertView.setSelected(habit.isCompleted());
 
