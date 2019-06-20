@@ -49,7 +49,7 @@ public class HabitsRemoteDataSource implements HabitsDataSource {
     }
 
     private static void addHabit(int icon, String title, String description) throws CloneNotSupportedException {
-        Alarm alarm = new Alarm(500, 50, 30, 10, 1000, 0, 1);
+        Alarm alarm = new Alarm();
         Habit newHabit = new Habit(AppConstant.HABIT_ICONS[icon], title, description, false, alarm);
         HABITS_SERVICE_DATA.put(newHabit.getId(), newHabit);
     }
@@ -101,7 +101,7 @@ public class HabitsRemoteDataSource implements HabitsDataSource {
 
     @Override
     public void activateHabit(Habit habit) {
-        Habit activeHabit = new Habit(habit.getId(), habit.getIcon(), habit.getTitle(), habit.getDescription(), habit.isCompleted(), habit.getAlarm());
+        Habit activeHabit = new Habit(habit.getId(), habit.getIcon(), habit.getTitle(), habit.getDescription(), habit.isActive(), habit.getAlarm());
         HABITS_SERVICE_DATA.put(habit.getId(), habit);
     }
 
@@ -115,7 +115,7 @@ public class HabitsRemoteDataSource implements HabitsDataSource {
         Iterator<Map.Entry<String, Habit>> it = HABITS_SERVICE_DATA.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, Habit> entry = it.next();
-            if (entry.getValue().isCompleted()) {
+            if (entry.getValue().isActive()) {
                 it.remove();
             }
         }

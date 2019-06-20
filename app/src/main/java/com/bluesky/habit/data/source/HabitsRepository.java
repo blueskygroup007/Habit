@@ -265,7 +265,7 @@ public class HabitsRepository implements HabitsDataSource {
         Iterator<Map.Entry<String, Habit>> it = mCachedTasks.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, Habit> entry = it.next();
-            if (entry.getValue().isCompleted()) {
+            if (entry.getValue().isActive()) {
                 it.remove();
             }
         }

@@ -35,10 +35,10 @@ public interface HabitDao {
      * 更新一个habit的completed状态
      *
      * @param habitId
-     * @param completed
+     * @param active
      */
-    @Query("UPDATE Habit SET completed=:completed WHERE id=:habitId")
-    void updateCompleted(String habitId, boolean completed);
+    @Query("UPDATE Habit SET active=:active WHERE id=:habitId")
+    void updateState(String habitId, boolean active);
 
     @Delete
     void deleteHabits(Habit habit);

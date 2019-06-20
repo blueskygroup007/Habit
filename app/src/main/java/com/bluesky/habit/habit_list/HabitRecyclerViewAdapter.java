@@ -71,15 +71,15 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<HabitRecycler
     @Override
     public void onBindViewHolder(@NonNull HabitRecyclerViewAdapter.VH holder, int position) {
         final Habit habit = mHabits.get(position);
-        holder.switch_completed.setChecked(habit.isCompleted());
+        holder.switch_completed.setChecked(habit.isActive());
         holder.iv_icon.setImageResource(habit.getIcon());
         holder.tv_title.setText(habit.getTitle());
         holder.tv_description.setText(habit.getDescription());
-        holder.mRoot.setSelected(habit.isCompleted());
-        if (habit.getAlarm() == null) {
-            Alarm alarm = new Alarm(100, 50, 30, 10, 20, 0, 0);
-            habit.setAlarm(alarm);
-        }
+        holder.mRoot.setSelected(habit.isActive());
+//        if (habit.getAlarm() == null) {
+//            Alarm alarm = new Alarm();
+//            habit.setAlarm(alarm);
+//        }
 
         holder.pb_time.setMax(habit.getAlarm().getAlarmInterval());
         holder.pb_time.setProgress(habit.getAlarm().getAlarmCurrent());

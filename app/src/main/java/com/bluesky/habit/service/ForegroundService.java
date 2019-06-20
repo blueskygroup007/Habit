@@ -79,7 +79,7 @@ public class ForegroundService extends Service {
          */
         public void start() {
             if (mPresenter == null) {
-                mPresenter = new ForeAlarmPresenter(Injection.provideTasksRepository(ForegroundService.this));
+                mPresenter = new ForeAlarmPresenter(ForegroundService.this,Injection.provideTasksRepository(ForegroundService.this));
             }
             mPresenter.start();
 

@@ -321,14 +321,14 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
             holder.pb_time.setStepCountText(habit.getAlarm().getAlarmCurrent() + "");
             holder.pb_time.setPercentage(habit.getAlarm().getAlarmCurrent() * 100 / habit.getAlarm().getAlarmInterval());
 
-            holder.switch_completed.setChecked(habit.isCompleted());
+            holder.switch_completed.setChecked(habit.isActive());
             holder.iv_icon.setImageResource(habit.getIcon());
             holder.tv_title.setText(habit.getTitle());
             holder.tv_description.setText(habit.getDescription());
             holder.pb_number.setMax(habit.getAlarm().getNumberCount());
             holder.pb_number.setProgress(habit.getAlarm().getNumberCurrent());
             //修改item的背景变化
-            convertView.setSelected(habit.isCompleted());
+            convertView.setSelected(habit.isActive());
 
             holder.switch_completed.setOnCheckedChangeListener(new SwitchButton.OnCheckedChangeListener() {
                 @Override

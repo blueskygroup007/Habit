@@ -1,6 +1,7 @@
 package com.bluesky.habit.data;
 
 import com.bluesky.habit.constant.AppConstant;
+
 import java.util.UUID;
 
 import androidx.annotation.NonNull;
@@ -24,24 +25,34 @@ public class Habit {
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "id")
-    private String mId;
+    private  String mId;
     @ColumnInfo(name = "icon")
-    private int mIcon;
+    private  int mIcon;
     @ColumnInfo(name = "title")
-    private String mTitle;
+    private  String mTitle;
     @ColumnInfo(name = "description")
-    private String mDescription;
-    @ColumnInfo(name = "completed")
-    private boolean mCompleted;
+    private  String mDescription;
+    @ColumnInfo(name = "active")
+    private  boolean mActive;
     @Embedded
-    private Alarm mAlarm;
+    private  Alarm mAlarm;
 
-    public Habit(@NonNull String id, int icon, String title, String description, boolean completed, Alarm alarm) {
+    /**
+     * todo 只留一个构造方法给Room,其余全部Ignore
+     *
+     * @param id
+     * @param icon
+     * @param title
+     * @param description
+     * @param active
+     * @param alarm
+     */
+    public Habit(@NonNull String id, int icon, String title, String description, boolean active, Alarm alarm) {
         mId = id;
         mIcon = icon;
         mTitle = title;
         mDescription = description;
-        mCompleted = completed;
+        mActive = active;
         mAlarm = alarm;
     }
 
@@ -51,33 +62,25 @@ public class Habit {
         mIcon = habit.getIcon();
         mTitle = habit.getTitle();
         mDescription = habit.getDescription();
-        mCompleted = habit.isCompleted();
+        mActive = habit.isActive();
         mAlarm = habit.getAlarm();
     }
 
     @Ignore
     public Habit(int icon, String title, String description) {
-        mId = UUID.randomUUID().toString();
-        mIcon = icon;
-        mTitle = title;
-        mDescription = description;
-        mCompleted = false;
-        mAlarm = null;
+        this(UUID.randomUUID().toString(), icon, title, description, false, new Alarm());
     }
 
     @Ignore
     public Habit(String title, String description) {
-        mId = UUID.randomUUID().toString();
-        mIcon = DEFAULT_ICON;
-        mTitle = title;
-        mDescription = description;
-        mCompleted = false;
-        mAlarm = null;
+        this(UUID.randomUUID().toString(), DEFAULT_ICON, title, description, false, new Alarm());
     }
 
+
+
     @Ignore
-    public Habit(int icon, String title, String description, boolean completed, Alarm alarm) {
-        this(UUID.randomUUID().toString(), icon, title, description, completed, alarm);
+    public Habit(int icon, String title, String description, boolean active, Alarm alarm) {
+        this(UUID.randomUUID().toString(), icon, title, description, active, alarm);
     }
 
     @NonNull
@@ -113,12 +116,12 @@ public class Habit {
         mDescription = description;
     }
 
-    public boolean isCompleted() {
-        return mCompleted;
+    public boolean isActive() {
+        return mActive;
     }
 
-    public void setCompleted(boolean completed) {
-        mCompleted = completed;
+    public void setActive(boolean active) {
+        mActive = active;
     }
 
     public Alarm getAlarm() {
@@ -130,7 +133,6 @@ public class Habit {
     }
 
 
-
     @Override
     public String toString() {
         return "Habit{" +
@@ -138,7 +140,7 @@ public class Habit {
                 ", mIcon=" + mIcon +
                 ", mTitle='" + mTitle + '\'' +
                 ", mDescription='" + mDescription + '\'' +
-                ", mCompleted=" + mCompleted +
+                ", mCompleted=" + mActive +
                 ", mAlarm=" + mAlarm +
                 '}' + '\n';
     }
