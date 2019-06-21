@@ -1,5 +1,8 @@
 package com.bluesky.habit.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.bluesky.habit.constant.AppConstant;
 
 import java.util.UUID;
@@ -17,7 +20,7 @@ import androidx.room.PrimaryKey;
  * Description:
  */
 @Entity
-public class Habit {
+public class Habit implements Parcelable {
     @Ignore
     private static final int DEFAULT_ICON = AppConstant.DEFAULT_ICON;
     //todo 主键必须有NonNull注解
@@ -83,6 +86,26 @@ public class Habit {
         this(UUID.randomUUID().toString(), icon, title, description, active, alarm);
     }
 
+    protected Habit(Parcel in) {
+        mId = in.readString();
+        mIcon = in.readInt();
+        mTitle = in.readString();
+        mDescription = in.readString();
+        mActive = in.readByte() != 0;
+    }
+
+    public static final Creator<Habit> CREATOR = new Creator<Habit>() {
+        @Override
+        public Habit createFromParcel(Parcel in) {
+            return new Habit(in);
+        }
+
+        @Override
+        public Habit[] newArray(int size) {
+            return new Habit[size];
+        }
+    };
+
     @NonNull
     public String getId() {
         return mId;
@@ -143,5 +166,19 @@ public class Habit {
                 ", mCompleted=" + mActive +
                 ", mAlarm=" + mAlarm +
                 '}' + '\n';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mId);
+        dest.writeInt(mIcon);
+        dest.writeString(mTitle);
+        dest.writeString(mDescription);
+        dest.writeByte((byte) (mActive ? 1 : 0));
     }
 }

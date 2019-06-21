@@ -1,6 +1,8 @@
 package com.bluesky.habit.habit_list;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Binder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +21,7 @@ import com.bluesky.habit.data.Habit;
 import com.bluesky.habit.data.source.HabitsDataSource;
 import com.bluesky.habit.data.source.HabitsRepository;
 import com.bluesky.habit.habit_list.dummy.DummyContent.DummyItem;
+import com.bluesky.habit.service.ForegroundService;
 import com.bluesky.habit.util.Injection;
 import com.bluesky.habit.util.LogUtils;
 import com.suke.widget.SwitchButton;
@@ -45,9 +48,10 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     private static final String TAG = HabitFragment.class.getSimpleName().toString();
+    public static final String ARG_BINDER = "foregroundservice_binder";
     // TODO: Customize parameters
     private int mColumnCount = 1;
-
+    private ForegroundService.ForeControlBinder mBinder;
     private HabitListContract.Presenter mPresenter;
     private OnListFragmentInteractionListener mListener;
     private ScrollChildSwipeRefreshLayout mRecyclerView;
@@ -72,6 +76,7 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
     private TextView mFilteringLabelView;
 
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -81,10 +86,10 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static HabitFragment newInstance(int columnCount) {
+    public static HabitFragment newInstance(ForegroundService.ForeControlBinder binder) {
         HabitFragment fragment = new HabitFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+        args.putSerializable(ARG_BINDER, binder);
         fragment.setArguments(args);
         return fragment;
     }
@@ -93,18 +98,33 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        }
+
         //Todo 这里必须有一个初始化的0.否则adapter中就会报空指针(必须让getCount是0)
         //todo 经查,是adapter忘记写setTag()方法了
         mAdapter = new HabitAdapter(new ArrayList<>(0), mItemListener);
+        if (savedInstanceState != null) {
+            mBinder = (ForegroundService.ForeControlBinder) savedInstanceState.getSerializable(ARG_BINDER);
+        } else {
+
+            if (getArguments() != null) {
+                mBinder = (ForegroundService.ForeControlBinder) getArguments().getSerializable(ARG_BINDER);
+            }
+        }
+
+
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putSerializable(ARG_BINDER, mBinder);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         //P的启动入口
+
         mPresenter.start();
     }
 
@@ -132,6 +152,7 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
         return root;
     }
+
 
     /**
      * 测试代码:当fragment的视图都创建完毕,传递真正的列表数据进去
@@ -334,9 +355,9 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
                 @Override
                 public void onCheckedChanged(SwitchButton view, boolean isChecked) {
                     if (isChecked) {
-                        mItemListener.onCompleteTaskClick(habit);
-                    } else {
                         mItemListener.onActivateTaskClick(habit);
+                    } else {
+                        mItemListener.onCompleteTaskClick(habit);
                     }
                 }
             });
@@ -376,12 +397,14 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
         @Override
         public void onCompleteTaskClick(Habit completedHabit) {
-            mPresenter.completeHabit(completedHabit);
+//            mPresenter.completeHabit(completedHabit);
+            mPresenter.cancelHabitAlarm(completedHabit);
         }
 
         @Override
         public void onActivateTaskClick(Habit activatedHabit) {
-            mPresenter.activateHabit(activatedHabit);
+//            mPresenter.activateHabit(activatedHabit);
+            mPresenter.startHabitAlarm(activatedHabit);
         }
     };
 }

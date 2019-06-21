@@ -30,6 +30,7 @@ public class HabitsRemoteDataSource implements HabitsDataSource {
 
         try {
             addHabit(0, "habit1", "第一个好习惯,默认图标...");
+
             addHabit(1, "habit2", "第二个好习惯,半小时喝一次水...");
             addHabit(2, "habit3", "第三个好习惯,眼保健操...");
             addHabit(3, "habit4", "最重要的好习惯,学习,学习,学习...");

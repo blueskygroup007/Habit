@@ -1,18 +1,24 @@
 package com.bluesky.habit.habit_list;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Binder;
 import android.util.Log;
 
+import com.bluesky.habit.activity.MainActivity;
 import com.bluesky.habit.data.Habit;
 import com.bluesky.habit.data.source.HabitsDataSource;
 import com.bluesky.habit.data.source.HabitsRepository;
 import com.bluesky.habit.service.ForegroundService;
-import com.bluesky.habit.util.AlarmUtils;
 import com.bluesky.habit.util.EspressoIdlingResource;
 import com.bluesky.habit.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.bluesky.habit.service.ForegroundService.ACTION_PLAY;
+import static com.bluesky.habit.service.ForegroundService.ACTION_STOP;
+import static com.bluesky.habit.service.ForegroundService.EXTRA_HABIT;
 
 /**
  * @author BlueSky
@@ -25,18 +31,88 @@ public class HabitListPresenter implements HabitListContract.Presenter {
     private final HabitsRepository mRepository;
     private HabitListContract.View mView;
     private boolean mFirstLoad = true;
+    private Context mContext;
     private ForegroundService.ForeControlBinder mBinder;
 
-    public HabitListPresenter(HabitsRepository repository, HabitListContract.View view) {
+    public HabitListPresenter(Context context, HabitsRepository repository, ForegroundService.ForeControlBinder binder, HabitListContract.View view) {
         mRepository = repository;
         mView = view;
+        mBinder = binder;
+        mContext = context;
         mView.setPresenter(this);
+        mBinder.registerOnControlListener(new ForegroundService.OnControlListener() {
+            @Override
+            public void onHabitStarted() {
+                LogUtils.d(TAG, "HabitStarted回调了...");
+            }
+
+            @Override
+            public void onHabitPaused() {
+
+            }
+
+            @Override
+            public void onHabitStopped() {
+
+            }
+
+            @Override
+            public void onHabitAccepted() {
+
+            }
+
+            @Override
+            public void onHabitSkipped() {
+
+            }
+
+            @Override
+            public void onHabitTimeUp() {
+
+            }
+        });
     }
 
+    /**
+     * 手动设置Binder,暂时没有使用
+     *
+     * @param service
+     */
     @Override
     public void setService(Binder service) {
         //todo 这里强转,是否要判断一下
         mBinder = (ForegroundService.ForeControlBinder) service;
+        mBinder.registerOnControlListener(new ForegroundService.OnControlListener() {
+            @Override
+            public void onHabitStarted() {
+                LogUtils.d(TAG, "HabitStarted回调了...");
+            }
+
+            @Override
+            public void onHabitPaused() {
+
+            }
+
+            @Override
+            public void onHabitStopped() {
+
+            }
+
+            @Override
+            public void onHabitAccepted() {
+
+            }
+
+            @Override
+            public void onHabitSkipped() {
+
+            }
+
+            @Override
+            public void onHabitTimeUp() {
+
+            }
+        });
     }
 
     @Override
@@ -45,16 +121,32 @@ public class HabitListPresenter implements HabitListContract.Presenter {
         if (mBinder != null) {
             mBinder.doStartHabit(habit);
         }
+
+
+        Intent intent = new Intent(mContext, ForegroundService.class);
+        intent.setAction(ACTION_PLAY);
+        intent.putExtra(EXTRA_HABIT,habit);
+        mContext.startService(intent);
+
+    }
+
+    @Override
+    public void cancelHabitAlarm(Habit habit) {
+        Intent intent = new Intent(mContext, ForegroundService.class);
+        intent.setAction(ACTION_STOP);
+        intent.putExtra(EXTRA_HABIT,habit);
+
+        mContext.startService(intent);
     }
 
     @Override
     public void loadHabits(boolean forceUpdate) {
         //首次加载时,强制网络加载
-        loadTasks(forceUpdate || mFirstLoad, true);
+        loadHabits(forceUpdate || mFirstLoad, true);
         mFirstLoad = false;
     }
 
-    private void loadTasks(boolean forceUpdate, final boolean showLoadingUI) {
+    private void loadHabits(boolean forceUpdate, final boolean showLoadingUI) {
         if (showLoadingUI) {
             mView.setLoadingIndicator(true);
         }

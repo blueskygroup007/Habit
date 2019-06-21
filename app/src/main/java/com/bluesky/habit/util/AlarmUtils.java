@@ -39,6 +39,7 @@ public class AlarmUtils {
         Intent intent = new Intent(context, clsReceiver);
         intent.setAction(ALARM_ACTION);
         intent.putExtra("alarm", alarm);
+        //使用hashCode作为请求码,以区分alarm
         PendingIntent pi = PendingIntent.getBroadcast(context, alarm.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
         long interval = alarm.getAlarmInterval();
         /**

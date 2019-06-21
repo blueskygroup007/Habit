@@ -6,18 +6,15 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.text.TextUtils;
-import android.util.Log;
 
 import com.bluesky.habit.R;
 import com.bluesky.habit.activity.MainActivity;
 import com.bluesky.habit.data.Alarm;
 import com.bluesky.habit.data.Habit;
-import com.bluesky.habit.habit_list.HabitListContract;
-import com.bluesky.habit.habit_list.HabitListPresenter;
 import com.bluesky.habit.util.Injection;
 import com.bluesky.habit.util.LogUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +41,7 @@ import androidx.core.app.NotificationCompat;
 public class ForegroundService extends Service {
     private static final String TAG = ForegroundService.class.getSimpleName();
     public static final int ID = 12346;
-    private static final String EXTRA_HABIT = "extra_habit";
+    public static final String EXTRA_HABIT = "extra_habit";
     private ForeAlarmPresenter mPresenter;
 
     private List<OnControlListener> mOnControlListeners = new ArrayList<>();
@@ -52,7 +49,7 @@ public class ForegroundService extends Service {
     /**
      * todo 这里主要是响应客户端的复杂指令
      */
-    public class ForeControlBinder extends Binder {
+    public class ForeControlBinder extends Binder implements Serializable {
 
         /**
          * 维护一个Listener列表,用来让service通知客户端去更新状态和显示.
@@ -91,9 +88,10 @@ public class ForegroundService extends Service {
          * @param habit
          */
         public void doStartHabit(Habit habit) {
-            LogUtils.d(TAG, "启动一个Habit...");
+            LogUtils.d(TAG, "使用Binder方式启动一个Habit...");
             mPresenter.startAlarm(habit.getAlarm());
         }
+
     }
 
     private ForeControlBinder mBinder = new ForeControlBinder();
@@ -128,6 +126,8 @@ public class ForegroundService extends Service {
         Alarm alarm = habit.getAlarm();
         switch (action) {
             case ACTION_PLAY:
+                LogUtils.d(TAG, "使用Action方式启动一个Habit...");
+
                 mPresenter.startAlarm(alarm);
                 for (OnControlListener listener : mOnControlListeners
                 ) {
@@ -142,6 +142,8 @@ public class ForegroundService extends Service {
                 }
                 break;
             case ACTION_STOP:
+                LogUtils.d(TAG, "使用Action方式cancel一个Habit...");
+
                 mPresenter.stopAlarm(alarm);
                 for (OnControlListener listener : mOnControlListeners
                 ) {
@@ -184,6 +186,11 @@ public class ForegroundService extends Service {
     public void onCreate() {
         super.onCreate();
         LogUtils.e(TAG, "创建ForegroundService...");
+        if (mPresenter == null) {
+            mPresenter = new ForeAlarmPresenter(ForegroundService.this, Injection.provideTasksRepository(ForegroundService.this));
+        }
+        mPresenter.start();
+
     }
 
     private void doDissmiss() {
@@ -221,6 +228,9 @@ public class ForegroundService extends Service {
         return super.onUnbind(intent);
     }
 
+    /**
+     * todo 系统异常kill掉service时,不会调用destroy
+     */
     @Override
     public void onDestroy() {
         LogUtils.e(TAG, "前台服务onDestroy了.....");
@@ -234,7 +244,7 @@ public class ForegroundService extends Service {
     /**
      * 所有需要通知监听者的动作接口
      */
-    private interface OnControlListener {
+    public interface OnControlListener {
         void onHabitStarted();
 
         void onHabitPaused();

@@ -1,5 +1,8 @@
 package com.bluesky.habit.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.room.Entity;
 import androidx.room.Ignore;
 
@@ -13,7 +16,7 @@ import java.util.Objects;
  * Description:
  */
 @Entity
-public class Alarm implements Serializable {
+public class Alarm implements Parcelable {
     /**
      * 预设总提示次数(统计用)
      */
@@ -79,6 +82,33 @@ public class Alarm implements Serializable {
 
     public Alarm() {
     }
+
+    protected Alarm(Parcel in) {
+        numberCount = in.readInt();
+        numberCurrent = in.readInt();
+        alarmInterval = in.readInt();
+        alarmCurrent = in.readInt();
+        alarmTotal = in.readInt();
+        wakeStyle = in.readInt();
+        feedbackStyle = in.readInt();
+        ringTone = in.readString();
+        increasingVolume = in.readByte() != 0;
+        isActive = in.readByte() != 0;
+        repeatDay = in.readInt();
+        vibrateStyle = in.readInt();
+    }
+
+    public static final Creator<Alarm> CREATOR = new Creator<Alarm>() {
+        @Override
+        public Alarm createFromParcel(Parcel in) {
+            return new Alarm(in);
+        }
+
+        @Override
+        public Alarm[] newArray(int size) {
+            return new Alarm[size];
+        }
+    };
 
     @Override
     public String toString() {
@@ -232,5 +262,26 @@ public class Alarm implements Serializable {
         this.isActive = isActive;
         this.repeatDay = repeatDay;
         this.vibrateStyle = vibrateStyle;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(numberCount);
+        dest.writeInt(numberCurrent);
+        dest.writeInt(alarmInterval);
+        dest.writeInt(alarmCurrent);
+        dest.writeInt(alarmTotal);
+        dest.writeInt(wakeStyle);
+        dest.writeInt(feedbackStyle);
+        dest.writeString(ringTone);
+        dest.writeByte((byte) (increasingVolume ? 1 : 0));
+        dest.writeByte((byte) (isActive ? 1 : 0));
+        dest.writeInt(repeatDay);
+        dest.writeInt(vibrateStyle);
     }
 }

@@ -1,9 +1,12 @@
 package com.bluesky.habit.activity;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
@@ -39,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private TextView mTextMessage;
     private FrameLayout mContainer;
     private List<Fragment> mFragmentList = new ArrayList<>();
-
+    public ForegroundService.ForeControlBinder mBinder;
     private HabitListPresenter mPresenter;
 
     ServiceConnection mConn = new ServiceConnection() {
@@ -47,7 +50,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         public void onServiceConnected(ComponentName name, IBinder service) {
             LogUtils.e(TAG, "onServiceConnected被回调了...");
 
-            ForegroundService.ForeControlBinder mBinder = (ForegroundService.ForeControlBinder) service;
+             mBinder = (ForegroundService.ForeControlBinder) service;
+            initFragment();
+
 //            mPresenter.setService();
         }
 
@@ -122,16 +127,14 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-
-        initFragment();
-
+        bindService(new Intent(this,ForegroundService.class),mConn,BIND_AUTO_CREATE);
     }
 
     private void initFragment() {
         //创建presenter
         //todo 这里的context使用了getApplicationContext
-        mHabitFragment = HabitFragment.newInstance(5);
-        mPresenter = new HabitListPresenter(Injection.provideTasksRepository(getApplicationContext()), mHabitFragment);
+        mHabitFragment = HabitFragment.newInstance(mBinder);
+        mPresenter = new HabitListPresenter(this,Injection.provideTasksRepository(getApplicationContext()),mBinder, mHabitFragment);
         mStatisticsFragment = StatisticsFragment.newInstance("param 1", "param 2");
         mDiscoverFragment = DiscoverFragment.newInstance("param 1", "param 2");
         mMineFragment = MineFragment.newInstance("param 1", "param 2");

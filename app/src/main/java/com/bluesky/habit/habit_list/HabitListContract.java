@@ -18,11 +18,15 @@ public interface HabitListContract {
 
         /**
          * 将连接前台service返回的Binder给P
+         *
          * @param service
          */
         void setService(Binder service);
 
         void startHabitAlarm(Habit habit);
+
+        void cancelHabitAlarm(Habit habit);
+
         /**
          * 从网络加载所有habit数据
          * todo 重点备忘:这里没有返回值,因为方法的实现中,由repository来真正获取数据,并完成成功/失败的回调
@@ -99,7 +103,6 @@ public interface HabitListContract {
          * 显示"没有任务"
          */
         void showNoHabits();
-
 
 
         /**
