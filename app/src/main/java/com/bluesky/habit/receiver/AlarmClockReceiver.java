@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.bluesky.habit.activity.AlertDialogActivity;
+import com.bluesky.habit.util.LogUtils;
 
 
 public class AlarmClockReceiver extends BroadcastReceiver {

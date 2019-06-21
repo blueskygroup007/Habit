@@ -79,10 +79,20 @@ public class ForegroundService extends Service {
          */
         public void start() {
             if (mPresenter == null) {
-                mPresenter = new ForeAlarmPresenter(ForegroundService.this,Injection.provideTasksRepository(ForegroundService.this));
+                mPresenter = new ForeAlarmPresenter(ForegroundService.this, Injection.provideTasksRepository(ForegroundService.this));
             }
             mPresenter.start();
 
+        }
+
+        /**
+         * 启动Habit
+         *
+         * @param habit
+         */
+        public void doStartHabit(Habit habit) {
+            LogUtils.d(TAG, "启动一个Habit...");
+            mPresenter.startAlarm(habit.getAlarm());
         }
     }
 

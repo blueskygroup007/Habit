@@ -1,0 +1,7 @@
+2019.6.21晚22:26
+
+1.先完成AlarmUtils的cancel方法,使其能够精确取消某个alarm.并相应修改StartAlarm方法.
+2.主界面的HabitListPresenter的startAlarm方法,调用的是ForegroundService的Binder的StartAlarm方法.
+  而该方法,调用Service的P的doStartAlarm方法.
+3.参看笔记,谁需要注册成为ForegroundService的Listener.//todo 主要取决于Service作为一个后台服务,所能监控到的状态(而这正是activity无法做到的)
+4.参看笔记或源码,谁需要使用StartService方法来发送Action给ForegroundService,主要用途是什么.创建这些action

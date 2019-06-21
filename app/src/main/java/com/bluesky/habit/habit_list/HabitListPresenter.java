@@ -7,7 +7,9 @@ import com.bluesky.habit.data.Habit;
 import com.bluesky.habit.data.source.HabitsDataSource;
 import com.bluesky.habit.data.source.HabitsRepository;
 import com.bluesky.habit.service.ForegroundService;
+import com.bluesky.habit.util.AlarmUtils;
 import com.bluesky.habit.util.EspressoIdlingResource;
+import com.bluesky.habit.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +23,7 @@ public class HabitListPresenter implements HabitListContract.Presenter {
 
     private static final String TAG = "HabitListPresenter";
     private final HabitsRepository mRepository;
-
     private HabitListContract.View mView;
-
-
     private boolean mFirstLoad = true;
     private ForegroundService.ForeControlBinder mBinder;
 
@@ -42,6 +41,7 @@ public class HabitListPresenter implements HabitListContract.Presenter {
 
     @Override
     public void startHabitAlarm(Habit habit) {
+        LogUtils.d(TAG, "启动一个Habit...");
         if (mBinder != null) {
             mBinder.doStartHabit(habit);
         }

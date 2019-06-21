@@ -5,10 +5,16 @@ import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.bluesky.habit.Listener.OnFragmentInteractionListener;
 import com.bluesky.habit.R;
@@ -17,7 +23,6 @@ import com.bluesky.habit.habit_list.HabitFragment;
 import com.bluesky.habit.habit_list.HabitListPresenter;
 import com.bluesky.habit.habit_list.dummy.DummyContent;
 import com.bluesky.habit.mine.MineFragment;
-import com.bluesky.habit.service.ForeContract;
 import com.bluesky.habit.service.ForegroundService;
 import com.bluesky.habit.statistics.StatisticsFragment;
 import com.bluesky.habit.util.Injection;
@@ -26,13 +31,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener, HabitFragment.OnListFragmentInteractionListener {
 

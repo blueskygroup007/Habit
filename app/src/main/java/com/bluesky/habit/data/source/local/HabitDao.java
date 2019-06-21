@@ -38,7 +38,7 @@ public interface HabitDao {
      * @param active
      */
     @Query("UPDATE Habit SET active=:active WHERE id=:habitId")
-    void updateState(String habitId, boolean active);
+    void updateCompleted(String habitId, boolean active);
 
     @Delete
     void deleteHabits(Habit habit);

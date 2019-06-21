@@ -87,7 +87,7 @@ public class LogUtils {
 	/** 以级别为 e 的形式输出LOG */
 	public static void e(String msg) {
 		if (mDebuggable >= LEVEL_ERROR) {
-			LogUtils.e(mTag, msg);
+			Log.e(mTag, msg);
 		}
 	}
 
@@ -108,14 +108,14 @@ public class LogUtils {
 	/** 以级别为 e 的形式输出Throwable */
 	public static void e(Throwable tr) {
 		if (mDebuggable >= LEVEL_ERROR) {
-			LogUtils.e(mTag, "", tr);
+			Log.e(mTag, "", tr);
 		}
 	}
 
 	/** 以级别为 e 的形式输出LOG信息和Throwable */
 	public static void e(String msg, Throwable tr) {
 		if (mDebuggable >= LEVEL_ERROR && null != msg) {
-			LogUtils.e(mTag, msg, tr);
+			Log.e(mTag, msg, tr);
 		}
 	}
 
@@ -153,7 +153,7 @@ public class LogUtils {
 	/** 以级别为 e 的形式输出LOG */
 	public static void e(String tag, String msg) {
 		if (mDebuggable >= LEVEL_ERROR) {
-			LogUtils.e(tag, msg);
+			Log.e(tag, msg);
 		}
 	}
 
