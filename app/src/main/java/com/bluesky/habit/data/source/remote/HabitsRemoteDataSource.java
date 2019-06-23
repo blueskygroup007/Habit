@@ -28,15 +28,11 @@ public class HabitsRemoteDataSource implements HabitsDataSource {
     static {
         HABITS_SERVICE_DATA = new LinkedHashMap<>(3);
 
-        try {
-            addHabit(0, "habit1", "第一个好习惯,默认图标...");
+        addHabit(0, "habit1", "第一个好习惯,默认图标...");
 
-            addHabit(1, "habit2", "第二个好习惯,半小时喝一次水...");
-            addHabit(2, "habit3", "第三个好习惯,眼保健操...");
-            addHabit(3, "habit4", "最重要的好习惯,学习,学习,学习...");
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addHabit(1, "habit2", "第二个好习惯,半小时喝一次水...");
+        addHabit(2, "habit3", "第三个好习惯,眼保健操...");
+        addHabit(3, "habit4", "最重要的好习惯,学习,学习,学习...");
     }
 
     public static HabitsRemoteDataSource getInstance() {
@@ -49,9 +45,9 @@ public class HabitsRemoteDataSource implements HabitsDataSource {
     private HabitsRemoteDataSource() {
     }
 
-    private static void addHabit(int icon, String title, String description) throws CloneNotSupportedException {
-        Alarm alarm = new Alarm();
-        Habit newHabit = new Habit(AppConstant.HABIT_ICONS[icon], title, description, false, alarm);
+    private static void addHabit(int icon, String title, String description) {
+        Alarm alarm = new Alarm(100, 20, 10000, 1000 * icon * 2, 30, 1, 1, null, true, false, 128, 0);
+        Habit newHabit = new Habit(icon, title, description, false, alarm);
         HABITS_SERVICE_DATA.put(newHabit.getId(), newHabit);
     }
 

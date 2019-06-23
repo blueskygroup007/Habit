@@ -28,7 +28,7 @@ public class Habit implements Parcelable {
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "id")
-    private  String mId;
+    private final String mId;
     @ColumnInfo(name = "icon")
     private  int mIcon;
     @ColumnInfo(name = "title")
@@ -86,12 +86,14 @@ public class Habit implements Parcelable {
         this(UUID.randomUUID().toString(), icon, title, description, active, alarm);
     }
 
+
     protected Habit(Parcel in) {
         mId = in.readString();
         mIcon = in.readInt();
         mTitle = in.readString();
         mDescription = in.readString();
         mActive = in.readByte() != 0;
+        mAlarm = in.readParcelable(Alarm.class.getClassLoader());
     }
 
     public static final Creator<Habit> CREATOR = new Creator<Habit>() {
@@ -111,9 +113,9 @@ public class Habit implements Parcelable {
         return mId;
     }
 
-    public void setId(@NonNull String id) {
-        mId = id;
-    }
+//    public void setId(@NonNull String id) {
+//        mId = id;
+//    }
 
     public int getIcon() {
         return mIcon;
@@ -168,6 +170,7 @@ public class Habit implements Parcelable {
                 '}' + '\n';
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -180,5 +183,6 @@ public class Habit implements Parcelable {
         dest.writeString(mTitle);
         dest.writeString(mDescription);
         dest.writeByte((byte) (mActive ? 1 : 0));
+        dest.writeParcelable(mAlarm, flags);
     }
 }

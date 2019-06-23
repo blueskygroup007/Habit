@@ -21,6 +21,8 @@ import com.bluesky.habit.R;
 import com.bluesky.habit.service.ForegroundService;
 import com.bluesky.habit.util.LogUtils;
 
+import static com.bluesky.habit.service.ForegroundService.ACTION_ACCEPT;
+
 public class AlertDialogActivity extends Activity {
     public static final String TAG = AlertDialogActivity.class.getSimpleName();
     private static final int RADIO_ACC = 17;//传感器幅度值常量
@@ -29,6 +31,7 @@ public class AlertDialogActivity extends Activity {
     Button btnOk;
     private SensorManager sensorManager;
     private Sensor mSensor;
+    private Handler mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,15 +69,15 @@ public class AlertDialogActivity extends Activity {
         //启动加速度监听
         startAccSensor();
 
-        //5秒后关闭本界面
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        //10秒后关闭本界面
+        mHandler = new Handler();
+        mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 LogUtils.e(TAG, "自动延时关闭AlertDialogActivity");
                 finish();
             }
-        }, 5000);
+        }, 10000);
     }
 
     @Override
@@ -83,6 +86,8 @@ public class AlertDialogActivity extends Activity {
         setVibrator(false);
         sensorManager.unregisterListener(mLisenter, mSensor);
         LogUtils.e(TAG, "加速度监听停止了");
+        //移除所有消息,防止自动延时关闭本界面的消息再被执行.
+        mHandler.removeCallbacksAndMessages(null);
     }
 
     class AccelerometerLisenter implements SensorEventListener {
@@ -103,8 +108,9 @@ public class AlertDialogActivity extends Activity {
 
                     //给前台服务发消息,告诉P,有反馈
                     Intent intent = new Intent(AlertDialogActivity.this, ForegroundService.class);
-
-                    intent.setAction("");
+                    intent.setAction(ACTION_ACCEPT);
+                    startService(intent);
+                    finish();
                     //取消监听,直接finish(),destroy中有unregister.
                     //sensorManager.unregisterListener(mLisenter, mSensor);
 

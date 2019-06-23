@@ -34,7 +34,7 @@ public class LogUtils {
 	public static final int LEVEL_SYSTEM = 6;
 
 	/** 是否允许输出log */
-	private static int mDebuggable = LEVEL_DEBUG;
+	private static int mDebuggable = LEVEL_ALL;
 
 	/** 用于记时的变量 */
 	private static long mTimestamp = 0;

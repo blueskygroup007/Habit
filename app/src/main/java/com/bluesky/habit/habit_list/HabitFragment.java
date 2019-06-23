@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.app.progresviews.ProgressWheel;
 import com.bluesky.habit.R;
+import com.bluesky.habit.constant.AppConstant;
 import com.bluesky.habit.data.Habit;
 import com.bluesky.habit.data.source.HabitsDataSource;
 import com.bluesky.habit.data.source.HabitsRepository;
@@ -163,19 +164,19 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        HabitsRepository repository = Injection.provideTasksRepository(getContext());
-        repository.getHabits(new HabitsDataSource.LoadHabitsCallback() {
-            @Override
-            public void onHabitsLoaded(List<Habit> habits) {
-                mAdapter.replaceData(habits);
-                LogUtils.e(TAG, habits.toString());
-            }
-
-            @Override
-            public void onDataNotAvailable() {
-                Log.d(TAG, "取数据失败................");
-            }
-        });
+//        HabitsRepository repository = Injection.provideTasksRepository(getContext());
+//        repository.getHabits(new HabitsDataSource.LoadHabitsCallback() {
+//            @Override
+//            public void onHabitsLoaded(List<Habit> habits) {
+//                mAdapter.replaceData(habits);
+//                LogUtils.e(TAG, habits.toString());
+//            }
+//
+//            @Override
+//            public void onDataNotAvailable() {
+//                Log.d(TAG, "取数据失败................");
+//            }
+//        });
 
     }
 
@@ -281,10 +282,12 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
         void onListFragmentInteraction(DummyItem item);
     }
 
+
     private class HabitAdapter extends BaseAdapter {
 
         private List<Habit> mHabits;
         private ItemListener mItemListener;
+        private SwitchButton.OnCheckedChangeListener mSwitchButtonOnChangeListener;
 
         public HabitAdapter(List<Habit> habits, ItemListener itemListener) {
             mHabits = habits;
@@ -293,6 +296,8 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
         public void replaceData(List<Habit> habits) {
             setList(habits);
+            LogUtils.i(TAG, "habit列表个数是:......" + habits.size());
+
             notifyDataSetChanged();
         }
 
@@ -333,17 +338,34 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            //TODO ----------当前进度-----------------
+
             final Habit habit = getItem(position);
+            mSwitchButtonOnChangeListener = new SwitchButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(SwitchButton view, boolean isChecked) {
+//                    //判断是不是点击触发的，当setChecked()时则不会触发此listener
+//                    //但是,因为SwitchButton是第三方控件,可能是因为继承于view,而没有实现ClickAble,所以isPressed不能返回true.
+//                    if (!view.isPressed()) {
+//                        return;
+//                    }
+                    if (isChecked) {
+                        mItemListener.onActivateTaskClick(habit);
+                    } else {
+                        mItemListener.onCompleteTaskClick(habit);
+                    }
+                }
+            };
 
-            //holder.pb_time.setMax(habit.getAlarm().getInterval_time());
-            //holder.pb_time.setProgress(habit.getAlarm().getCurrent_time());
+
             holder.pb_time.setDefText("当前:");
-            holder.pb_time.setStepCountText(habit.getAlarm().getAlarmCurrent() + "");
+            holder.pb_time.setStepCountText(habit.getAlarm().getAlarmCurrent() / 1000 + "秒");
             holder.pb_time.setPercentage(habit.getAlarm().getAlarmCurrent() * 100 / habit.getAlarm().getAlarmInterval());
-
+            //先取消监听
+            holder.switch_completed.setOnCheckedChangeListener(null);
             holder.switch_completed.setChecked(habit.isActive());
-            holder.iv_icon.setImageResource(habit.getIcon());
+            //设置状态后再开启监听
+            holder.switch_completed.setOnCheckedChangeListener(mSwitchButtonOnChangeListener);
+            holder.iv_icon.setImageResource(AppConstant.HABIT_ICONS[habit.getIcon()]);
             holder.tv_title.setText(habit.getTitle());
             holder.tv_description.setText(habit.getDescription());
             holder.pb_number.setMax(habit.getAlarm().getNumberCount());
@@ -351,23 +373,7 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
             //修改item的背景变化
             convertView.setSelected(habit.isActive());
 
-            holder.switch_completed.setOnCheckedChangeListener(new SwitchButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(SwitchButton view, boolean isChecked) {
-                    if (isChecked) {
-                        mItemListener.onActivateTaskClick(habit);
-                    } else {
-                        mItemListener.onCompleteTaskClick(habit);
-                    }
-                }
-            });
 
-            convertView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mItemListener.onTaskClick(habit);
-                }
-            });
             return convertView;
         }
 
@@ -397,14 +403,16 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
         @Override
         public void onCompleteTaskClick(Habit completedHabit) {
-//            mPresenter.completeHabit(completedHabit);
-            mPresenter.cancelHabitAlarm(completedHabit);
+            //todo 这里只是启动和取消alarm了.还没有更新Repository,也没有更新列表(列表有分类显示:活动的,暂停的)
+            //todo 也没有刷新列表
+            mPresenter.completeHabit(completedHabit);
+//            mPresenter.cancelHabitAlarm(completedHabit);
         }
 
         @Override
         public void onActivateTaskClick(Habit activatedHabit) {
-//            mPresenter.activateHabit(activatedHabit);
-            mPresenter.startHabitAlarm(activatedHabit);
+            mPresenter.activateHabit(activatedHabit);
+//            mPresenter.startHabitAlarm(activatedHabit);
         }
     };
 }

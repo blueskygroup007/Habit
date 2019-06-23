@@ -1,5 +1,7 @@
 package com.bluesky.habit;
 
+import com.bluesky.habit.data.Alarm;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -19,7 +21,7 @@ public class ExampleUnitTest {
     public void javaTest() {
         int current = 10;
         int interval = 30;
-        int percent = current*100 / interval;
+        int percent = current * 100 / interval;
         System.out.println("result=" + percent);
     }
 
@@ -34,18 +36,28 @@ public class ExampleUnitTest {
         person1.addr = addr1;
 
         Person person2 = (Person) person1.clone();
-        System.out.println("person1:" + person1.toString());
-        System.out.println("person2:" + person2.toString() + "\n");
+        System.out.println("person1:" + person1.toString() + "----" + person1.addr.hashCode() + "----" + person1.addr.toString());
+        System.out.println("person2:" + person2.toString() + "----" + person2.addr.hashCode() + "----" + person2.addr.toString() + "\n");
+        System.out.println("person1.addr.street:" + person1.addr.street);
+        System.out.println("person2.addr.street:" + person2.addr.street + "\n");
+        System.out.println("person1.addr.street:" + person1.addr.street.hashCode());
+        System.out.println("person2.addr.street:" + person2.addr.street.hashCode() + "\n");
 
         person2.age = 22;
         person2.name = "li si";
         person2.addr.number = 202;
         person2.addr.street = "222 venture";
 
-        System.out.println("person1:" + person1.toString());
-        System.out.println("person2:" + person2.toString());
+        System.out.println("person1:" + person1.toString() + "----" + person1.addr.hashCode() + "----" + person1.addr.toString());
+        System.out.println("person2:" + person2.toString() + "----" + person2.addr.hashCode() + "----" + person2.addr.toString() + "\n");
+        System.out.println("person1.addr.street:" + person1.addr.street);
+        System.out.println("person2.addr.street:" + person2.addr.street + "\n");
+        System.out.println("person1.addr.street:" + person1.addr.street.hashCode());
+        System.out.println("person2.addr.street:" + person2.addr.street.hashCode());
 
     }
+
+
 
 
 }

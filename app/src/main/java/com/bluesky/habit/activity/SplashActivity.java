@@ -53,7 +53,9 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+        finish();
     }
+
     class WelcomeAdapter extends PagerAdapter {
 
         @Override

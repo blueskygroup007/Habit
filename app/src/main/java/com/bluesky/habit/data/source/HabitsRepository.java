@@ -219,7 +219,7 @@ public class HabitsRepository implements HabitsDataSource {
         mTasksRemoteDataSource.completeHabit(habit);
         mTasksLocalDataSource.completeHabit(habit);
         //根据原task生成一个新task，并设置completed为true，并用HashMap的put方法覆盖原task
-        Habit completedHabit = new Habit(habit.getId(),habit.getIcon(), habit.getTitle(), habit.getDescription(), true, habit.getAlarm());
+        Habit completedHabit = new Habit(habit.getId(),habit.getIcon(), habit.getTitle(), habit.getDescription(), false, habit.getAlarm());
 
         if (mCachedTasks == null) {
             mCachedTasks = new LinkedHashMap<>();
@@ -239,8 +239,8 @@ public class HabitsRepository implements HabitsDataSource {
         mTasksRemoteDataSource.activateHabit(habit);
         mTasksLocalDataSource.activateHabit(habit);
 
-//        Habit activiteHabit = new Habit(habit);
-        Habit activiteHabit = habit;
+        Habit activiteHabit = new Habit(habit.getId(),habit.getIcon(), habit.getTitle(), habit.getDescription(), true, habit.getAlarm());
+
         if (mCachedTasks == null) {
             mCachedTasks = new LinkedHashMap<>();
         }

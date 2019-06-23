@@ -42,22 +42,33 @@ public class ExampleInstrumentedTest {
 
         HabitDao dao = RHDatabase.getInstance(appContext).habitDao();
         dao.deleteAllHabits();
-        Alarm alarm = new Alarm(500, 50, 30, 10, 1000, 0, 1);
+        Alarm alarm = new Alarm();
 
-        Alarm alarm2 = (Alarm) alarm.clone();
-        Alarm alarm3 = (Alarm) alarm.clone();
-        Alarm alarm4 = (Alarm) alarm.clone();
-        Alarm alarm5 = (Alarm) alarm.clone();
+        Alarm alarm2 = alarm;
+        Alarm alarm3 = alarm;
+        Alarm alarm4 = alarm;
+        Alarm alarm5 = alarm;
 
-        Habit habit1 = new Habit(AppConstant.HABIT_ICONS[0], "habit1", "第一个好习惯,默认图标...", false, alarm2);
-        Habit habit2 = new Habit(AppConstant.HABIT_ICONS[1], "habit2", "第二个好习惯,半小时喝一次水...", false, alarm3);
-        Habit habit3 = new Habit(AppConstant.HABIT_ICONS[2], "habit3", "第三个好习惯,眼保健操...", false, alarm4);
-        Habit habit4 = new Habit(AppConstant.HABIT_ICONS[3], "habit4", "最重要的好习惯,学习,学习,学习...", false, alarm5);
+        Habit habit1 = new Habit(0, "habit1", "第一个好习惯,默认图标...", false, alarm2);
+        Habit habit2 = new Habit(1, "habit2", "第二个好习惯,半小时喝一次水...", false, alarm3);
+        Habit habit3 = new Habit(2, "habit3", "第三个好习惯,眼保健操...", false, alarm4);
+        Habit habit4 = new Habit(3, "habit4", "最重要的好习惯,学习,学习,学习...", false, alarm5);
         dao.insertHabit(habit1);
         dao.insertHabit(habit2);
         dao.insertHabit(habit3);
         dao.insertHabit(habit4);
         List<Habit> habits = dao.getHabits();
-        Log.d(TAG, habits.toString());
+        Log.e(TAG, habit1.getAlarm().toString());
+        Log.e(TAG, habit2.getAlarm().toString());
+        habit1.getAlarm().setNumberCount(555);
+        Log.e(TAG, "-------------------");
+        Log.e(TAG, habit1.getAlarm().toString());
+        Log.e(TAG, habit2.getAlarm().toString());
+        Alarm temp = (Alarm) habit1.getAlarm().clone();
+        habit2.setAlarm(temp);
+        habit1.getAlarm().setNumberCount(666);
+        Log.e(TAG, "-------------------");
+        Log.e(TAG, habit1.getAlarm().toString());
+        Log.e(TAG, habit2.getAlarm().toString());
     }
 }

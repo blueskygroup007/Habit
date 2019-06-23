@@ -16,7 +16,7 @@ import java.util.Objects;
  * Description:
  */
 @Entity
-public class Alarm implements Parcelable {
+public class Alarm implements Parcelable, Cloneable {
     /**
      * 预设总提示次数(统计用)
      */
@@ -31,7 +31,7 @@ public class Alarm implements Parcelable {
      * 闹钟间隔
      */
 
-    private int alarmInterval = 10 * 60 * 1000;
+    private int alarmInterval = 10 * 1000;
     /**
      * 当前闹钟进行时间
      */
@@ -83,6 +83,7 @@ public class Alarm implements Parcelable {
     public Alarm() {
     }
 
+
     protected Alarm(Parcel in) {
         numberCount = in.readInt();
         numberCurrent = in.readInt();
@@ -126,6 +127,13 @@ public class Alarm implements Parcelable {
                 ", repeatDay=" + repeatDay +
                 ", vibrateStyle=" + vibrateStyle +
                 '}';
+    }
+
+
+    @Override
+    public Alarm clone() throws CloneNotSupportedException {
+
+        return (Alarm) super.clone();
     }
 
     @Override

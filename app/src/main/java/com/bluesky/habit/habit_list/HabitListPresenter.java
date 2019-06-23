@@ -117,15 +117,16 @@ public class HabitListPresenter implements HabitListContract.Presenter {
 
     @Override
     public void startHabitAlarm(Habit habit) {
-        LogUtils.d(TAG, "启动一个Habit...");
-        if (mBinder != null) {
-            mBinder.doStartHabit(habit);
-        }
+        //Binder方式启动Alarm
+//        LogUtils.d(TAG, "启动一个Habit...");
+//        if (mBinder != null) {
+//            mBinder.doStartHabit(habit);
+//        }
 
-
+        //Action方式启动Alarm
         Intent intent = new Intent(mContext, ForegroundService.class);
         intent.setAction(ACTION_PLAY);
-        intent.putExtra(EXTRA_HABIT,habit);
+        intent.putExtra(EXTRA_HABIT, habit);
         mContext.startService(intent);
 
     }
@@ -134,7 +135,7 @@ public class HabitListPresenter implements HabitListContract.Presenter {
     public void cancelHabitAlarm(Habit habit) {
         Intent intent = new Intent(mContext, ForegroundService.class);
         intent.setAction(ACTION_STOP);
-        intent.putExtra(EXTRA_HABIT,habit);
+        intent.putExtra(EXTRA_HABIT, habit);
 
         mContext.startService(intent);
     }
@@ -180,6 +181,7 @@ public class HabitListPresenter implements HabitListContract.Presenter {
                 if (showLoadingUI) {
                     mView.setLoadingIndicator(false);
                 }
+                //todo 源码这里单独使用了processTasks方法,
                 mView.showHabits(tasksToShow);
             }
 
@@ -192,6 +194,19 @@ public class HabitListPresenter implements HabitListContract.Presenter {
                 mView.showLoadingHabitsError();
             }
         });
+    }
+
+    private void processTasks(List<Habit> habits) {
+        if (habits.isEmpty()) {
+            // Show a message indicating there are no tasks for that filter type.
+            mView.showNoHabits();
+        } else {
+            // Show the list of tasks
+            mView.showHabits(habits);
+            // Set the filter label's text.
+            //暂时没有加入该功能
+//            showFilterLabel();
+        }
     }
 
 
@@ -208,12 +223,18 @@ public class HabitListPresenter implements HabitListContract.Presenter {
     @Override
     public void completeHabit(Habit completedHabit) {
         Log.d(TAG, "habit paused!!!");
-
+        cancelHabitAlarm(completedHabit);
+        mRepository.completeHabit(completedHabit);
+        loadHabits(false, false);
     }
 
     @Override
     public void activateHabit(Habit activeHabit) {
         Log.d(TAG, "habit actived!!!");
+        startHabitAlarm(activeHabit);
+        mRepository.activateHabit(activeHabit);
+        loadHabits(false, false);
+
     }
 
     @Override

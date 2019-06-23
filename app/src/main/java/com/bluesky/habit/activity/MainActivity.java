@@ -45,12 +45,19 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     public ForegroundService.ForeControlBinder mBinder;
     private HabitListPresenter mPresenter;
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //不释放,会报错
+        unbindService(mConn);
+    }
+
     ServiceConnection mConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             LogUtils.e(TAG, "onServiceConnected被回调了...");
 
-             mBinder = (ForegroundService.ForeControlBinder) service;
+            mBinder = (ForegroundService.ForeControlBinder) service;
             initFragment();
 
 //            mPresenter.setService();
@@ -127,14 +134,14 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        bindService(new Intent(this,ForegroundService.class),mConn,BIND_AUTO_CREATE);
+        bindService(new Intent(this, ForegroundService.class), mConn, BIND_AUTO_CREATE);
     }
 
     private void initFragment() {
         //创建presenter
         //todo 这里的context使用了getApplicationContext
         mHabitFragment = HabitFragment.newInstance(mBinder);
-        mPresenter = new HabitListPresenter(this,Injection.provideTasksRepository(getApplicationContext()),mBinder, mHabitFragment);
+        mPresenter = new HabitListPresenter(this, Injection.provideTasksRepository(getApplicationContext()), mBinder, mHabitFragment);
         mStatisticsFragment = StatisticsFragment.newInstance("param 1", "param 2");
         mDiscoverFragment = DiscoverFragment.newInstance("param 1", "param 2");
         mMineFragment = MineFragment.newInstance("param 1", "param 2");
