@@ -1,8 +1,12 @@
 package com.bluesky.habit;
 
 import com.bluesky.habit.data.Alarm;
+import com.bluesky.habit.util.TimeUtils;
 
 import org.junit.Test;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 
@@ -57,7 +61,19 @@ public class ExampleUnitTest {
 
     }
 
+    @Test
+    public void timeTest() {
+//        long ms = 136 ;//当前运行了136秒
+//        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+//        String str = formatter.format(ms);
+//        System.out.println(str);
+        long time = 300;
+        String str = TimeUtils.secToTime(Integer.parseInt(String.valueOf(time)));
+        int ii = new Long(time).intValue();
+        System.out.println(str + "--" + ii);
 
+
+    }
 
 
 }

@@ -46,6 +46,10 @@
         <activity
             android:name=".activity.AlertDialogActivity"
             android:theme="@android:style/Theme.Dialog" />
+        <activity android:name=".habit_detail.HabitDetailActivity">
+
+
+        </activity>
     </application>
 
 </manifest>

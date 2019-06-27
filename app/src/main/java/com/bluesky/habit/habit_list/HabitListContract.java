@@ -14,7 +14,7 @@ import java.util.List;
  * Description:
  */
 public interface HabitListContract {
-    interface Presenter extends BasePresenter<View> {
+    interface Presenter extends BasePresenter {
 
         /**
          * 将连接前台service返回的Binder给P
@@ -104,6 +104,17 @@ public interface HabitListContract {
          */
         void showNoHabits();
 
+        void showActiveFilterLabel();
+
+        void showCompletedFilterLabel();
+
+        void showAllFilterLabel();
+
+        void showNoActiveHabits();
+
+        void showNoCompletedHabits();
+
+        void showSuccessfullySavedMessage();
 
         /**
          * 是否激活

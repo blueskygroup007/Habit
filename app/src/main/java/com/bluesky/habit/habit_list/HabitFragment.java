@@ -2,12 +2,11 @@ package com.bluesky.habit.habit_list;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Binder;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,14 +16,14 @@ import android.widget.TextView;
 
 import com.app.progresviews.ProgressWheel;
 import com.bluesky.habit.R;
+import com.bluesky.habit.habit_detail.HabitDetailActivity;
 import com.bluesky.habit.constant.AppConstant;
 import com.bluesky.habit.data.Habit;
-import com.bluesky.habit.data.source.HabitsDataSource;
-import com.bluesky.habit.data.source.HabitsRepository;
 import com.bluesky.habit.habit_list.dummy.DummyContent.DummyItem;
 import com.bluesky.habit.service.ForegroundService;
-import com.bluesky.habit.util.Injection;
 import com.bluesky.habit.util.LogUtils;
+import com.bluesky.habit.util.TimeUtils;
+import com.google.android.material.snackbar.Snackbar;
 import com.suke.widget.SwitchButton;
 
 import java.util.ArrayList;
@@ -32,6 +31,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -136,6 +136,14 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
         //初始化任务列表视图
         ListView listView = root.findViewById(R.id.lv_task_list);
         listView.setAdapter(mAdapter);
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                if (position >= 0) {
+//                    mItemListener.onTaskClick(mAdapter.mHabits.get(position));
+//                }
+//            }
+//        });
         mFilteringLabelView = root.findViewById(R.id.tv_filtering_lable);
         mHabitsView = root.findViewById(R.id.ll_tasklist);
         //初始化no tasks窗体视图
@@ -154,31 +162,6 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
         return root;
     }
 
-
-    /**
-     * 测试代码:当fragment的视图都创建完毕,传递真正的列表数据进去
-     *
-     * @param view
-     * @param savedInstanceState
-     */
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-//        HabitsRepository repository = Injection.provideTasksRepository(getContext());
-//        repository.getHabits(new HabitsDataSource.LoadHabitsCallback() {
-//            @Override
-//            public void onHabitsLoaded(List<Habit> habits) {
-//                mAdapter.replaceData(habits);
-//                LogUtils.e(TAG, habits.toString());
-//            }
-//
-//            @Override
-//            public void onDataNotAvailable() {
-//                Log.d(TAG, "取数据失败................");
-//            }
-//        });
-
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -241,7 +224,9 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
     @Override
     public void showHabitDetailsUi(String habitId) {
-
+        Intent intent = new Intent(getContext(), HabitDetailActivity.class);
+        intent.putExtra(HabitDetailActivity.EXTRA_HABIT_ID, habitId);
+        startActivity(intent);
     }
 
     @Override
@@ -255,6 +240,48 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
     }
 
+    @Override
+    public void showActiveFilterLabel() {
+        mFilteringLabelView.setText(R.string.label_active);
+    }
+
+    @Override
+    public void showCompletedFilterLabel() {
+        mFilteringLabelView.setText(R.string.label_completed);
+
+    }
+
+    @Override
+    public void showAllFilterLabel() {
+        mFilteringLabelView.setText(R.string.label_all);
+
+    }
+
+    @Override
+    public void showNoActiveHabits() {
+        showNoTasksViews(getResources().getString(R.string.no_habits_active), R.drawable.ic_check_circle_24dp, false);
+    }
+
+    @Override
+    public void showNoCompletedHabits() {
+        showNoTasksViews(getResources().getString(R.string.no_habits_completed), R.drawable.ic_check_circle_24dp, false);
+
+    }
+
+    @Override
+    public void showSuccessfullySavedMessage() {
+        showMessage(getString(R.string.successfully_saved_habit_message));
+    }
+
+    /**
+     * 在Snackbar上显示一条吐司信息
+     *
+     * @param message
+     */
+    private void showMessage(String message) {
+
+        Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+    }
 
     @Override
     public boolean isActive() {
@@ -328,6 +355,7 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
                 holder = new ViewHolder();
                 LayoutInflater inflater = LayoutInflater.from(parent.getContext());
                 convertView = inflater.inflate(R.layout.item_habit_final, parent, false);
+                holder.root = convertView.findViewById(R.id.constraintlayout);
                 holder.pb_time = convertView.findViewById(R.id.pb_time);
                 holder.switch_completed = convertView.findViewById(R.id.switch_completed);
                 holder.iv_icon = convertView.findViewById(R.id.iv_icon);
@@ -358,8 +386,10 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
 
             holder.pb_time.setDefText("当前:");
-            holder.pb_time.setStepCountText(habit.getAlarm().getAlarmCurrent() / 1000 + "秒");
-            holder.pb_time.setPercentage(habit.getAlarm().getAlarmCurrent() * 100 / habit.getAlarm().getAlarmInterval());
+            long ms = habit.getAlarm().getAlarmCurrent();
+            String currentTime = TimeUtils.secToTime(new Long(ms / 1000).intValue());
+            holder.pb_time.setStepCountText(currentTime);
+            holder.pb_time.setPercentage(habit.getAlarm().getAlarmCurrent() * 360 / habit.getAlarm().getAlarmInterval());
             //先取消监听
             holder.switch_completed.setOnCheckedChangeListener(null);
             holder.switch_completed.setChecked(habit.isActive());
@@ -372,12 +402,26 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
             holder.pb_number.setProgress(habit.getAlarm().getNumberCurrent());
             //修改item的背景变化
             convertView.setSelected(habit.isActive());
-
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //打开编辑界面
+                    mItemListener.onTaskClick(habit);
+                }
+            });
+//            holder.root.setSelected(habit.isActive());
+//            holder.root.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    mItemListener.onTaskClick(habit);
+//                }
+//            });
 
             return convertView;
         }
 
         class ViewHolder {
+            ConstraintLayout root;
             ProgressWheel pb_time;
             SwitchButton switch_completed;
             ImageView iv_icon;

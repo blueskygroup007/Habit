@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <ImageView
+        android:id="@+id/iv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBaseline_toBaselineOf="@id/et_title"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline_left"
+
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:srcCompat="@drawable/ic_title_black_24dp" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        style="@style/TextViewDescriptionStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/des_title"
+        app:layout_constraintBaseline_toBaselineOf="@id/et_title"
+        app:layout_constraintEnd_toStartOf="@+id/et_title"
+        app:layout_constraintStart_toEndOf="@+id/guideline_left"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <EditText
+        android:id="@+id/et_title"
+        style="@style/EditTextContentStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tv_title"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:text="每天多喝水" />
+
+    <TextView
+        android:id="@+id/tv_content"
+        style="@style/TextViewDescriptionStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/des_content"
+        app:layout_constraintBaseline_toBaselineOf="@id/et_content"
+
+        app:layout_constraintLeft_toLeftOf="@+id/guideline_left"
+        app:layout_constraintTop_toBottomOf="@id/tv_title" />
+
+    <EditText
+        android:id="@+id/et_content"
+        style="@style/EditTextContentStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_content"
+        app:layout_constraintLeft_toRightOf="@id/tv_content"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/et_title"
+        tools:text="半小时喝水至少100毫升" />
+
+
+    <TextView
+        android:id="@+id/tv_interval"
+        style="@style/TextViewDescriptionStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/des_interval"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline_left"
+        app:layout_constraintTop_toBottomOf="@id/tv_content" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:max="5"
+        android:progress="1"
+        android:progressDrawable="@drawable/seekbar_progress"
+        android:thumb="@drawable/seekbar_thumb"
+        app:layout_constraintLeft_toRightOf="@id/tv_interval"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/et_content"
+        tools:layout_editor_absoluteX="61dp"
+        tools:layout_editor_absoluteY="167dp" />
+
+    <TextView
+        android:id="@+id/tv_alert"
+        style="@style/TextViewDescriptionStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/des_alert"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline_left"
+        app:layout_constraintTop_toBottomOf="@id/tv_interval" />
+
+
+    <TextView
+        android:id="@+id/tv_accept"
+        style="@style/TextViewDescriptionStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/des_accept"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline_left"
+        app:layout_constraintTop_toBottomOf="@id/tv_alert" />
+
+    <TextView
+        android:id="@+id/tv_delay"
+        style="@style/TextViewDescriptionStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/des_delay"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline_left"
+        app:layout_constraintTop_toBottomOf="@id/tv_accept" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toStartOf="@+id/tv_title"
+        app:layout_constraintGuide_begin="8dp"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_right_of_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="96dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+
+        app:layout_constraintGuide_percent="0.1"
+
+        />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+
+        app:layout_constraintGuide_percent="0.2"
+
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

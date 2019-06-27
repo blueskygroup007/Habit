@@ -46,5 +46,24 @@
     <string name="title_fragment_statistics">这是图表页面</string>
     <string name="title_fragment_list">这是习惯列表页面</string>
     <string name="title_activity_main">兔子习惯</string>
+    <string name="des_title">标题:</string>
+    <string name="hint_title">每天多喝水</string>
+    <string name="des_content">简介:</string>
+    <string name="hint_content">半小时喝水至少100毫升</string>
+    <string name="des_interval">间隔:</string>
+    <string name="des_alert">提醒:</string>
+    <string name="des_accept">达成:</string>
+    <string name="des_delay">推迟:</string>
+    <string name="des_minute">分钟</string>
+    <string name="des_rb_ring">铃声</string>
+    <string name="des_rb_vibrate">震动</string>
+    <string name="des_rb_light">闪光</string>
+    <string name="des_rb_shake">摇一摇</string>
+    <string name="des_rb_turnoff">翻转</string>
+    <string name="des_rb_cover">遮挡</string>
+    <string name="title_toolbar">编辑</string>
+    <string name="title_toolbar_sub">好习惯不在多,在精!</string>
+    <string name="des_menu_detail_edit">编辑</string>
+    <string name="des_menu_detail_finish">完成</string>
 
 </resources>

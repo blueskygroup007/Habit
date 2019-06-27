@@ -71,4 +71,10 @@ public class ExampleInstrumentedTest {
         Log.e(TAG, habit1.getAlarm().toString());
         Log.e(TAG, habit2.getAlarm().toString());
     }
+
+    @Test
+    public void detailActivityTest() {
+        Context appContext = InstrumentationRegistry.getTargetContext();
+
+    }
 }

@@ -181,6 +181,8 @@ public class HabitListPresenter implements HabitListContract.Presenter {
                 if (showLoadingUI) {
                     mView.setLoadingIndicator(false);
                 }
+
+                processHabits(tasksToShow);
                 //todo 源码这里单独使用了processTasks方法,
                 mView.showHabits(tasksToShow);
             }
@@ -196,7 +198,7 @@ public class HabitListPresenter implements HabitListContract.Presenter {
         });
     }
 
-    private void processTasks(List<Habit> habits) {
+    private void processHabits(List<Habit> habits) {
         if (habits.isEmpty()) {
             // Show a message indicating there are no tasks for that filter type.
             mView.showNoHabits();
@@ -205,19 +207,55 @@ public class HabitListPresenter implements HabitListContract.Presenter {
             mView.showHabits(habits);
             // Set the filter label's text.
             //暂时没有加入该功能
-//            showFilterLabel();
+            showFilterLabel();
         }
+    }
+
+    /**
+     * 显示列表过滤标签
+     */
+    private void showFilterLabel() {
+        //没有做标签分类,所以暂时显示"所有"
+        mView.showAllFilterLabel();
+//        switch (mCurrentFiltering) {
+//            case ACTIVE_TASKS:
+//                mTasksView.showActiveFilterLabel();
+//                break;
+//            case COMPLETED_TASKS:
+//                mTasksView.showCompletedFilterLabel();
+//                break;
+//            default:
+//                mTasksView.showAllFilterLabel();
+//                break;
+//        }
+    }
+
+    /**
+     * 显示空列表过滤标签
+     */
+    private void processEmptyHabits() {
+//        switch (mCurrentFiltering) {
+//            case ACTIVE_TASKS:
+//                mTasksView.showNoActiveTasks();
+//                break;
+//            case COMPLETED_TASKS:
+//                mTasksView.showNoCompletedTasks();
+//                break;
+//            default:
+//                mTasksView.showNoTasks();
+//                break;
+//        }
     }
 
 
     @Override
     public void addNewHabit() {
-
+        mView.showAddHabit();
     }
 
     @Override
     public void openHabitDetails(Habit requestedHabit) {
-
+        mView.showHabitDetailsUi(requestedHabit.getId());
     }
 
     @Override
@@ -240,12 +278,6 @@ public class HabitListPresenter implements HabitListContract.Presenter {
     @Override
     public void start() {
         loadHabits(false);
-    }
-
-    @Override
-    public void setView(HabitListContract.View view) {
-        mView = view;
-        mView.setPresenter(this);
     }
 
 

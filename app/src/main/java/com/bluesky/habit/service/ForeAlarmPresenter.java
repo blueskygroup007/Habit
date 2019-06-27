@@ -57,9 +57,6 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
 
     }
 
-    @Override
-    public void setView(Object view) {
 
-    }
 
 }
