@@ -171,36 +171,65 @@
                 android:layout_height="wrap_content"
                 android:text="@string/des_alert" />
 
-            <RadioGroup
-                android:id="@+id/rg_alert"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="48dp"
                 android:orientation="horizontal">
 
-                <RadioButton
-
-                    android:id="@+id/rb_ring"
+                <CheckBox
+                    android:id="@+id/cb_alert_ring"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:checked="true"
                     android:text="@string/des_rb_ring" />
 
-                <RadioButton
-                    android:id="@+id/rb_vibrate"
+                <CheckBox
+                    android:id="@+id/cb_alert_vibrate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/des_rb_vibrate" />
 
-                <RadioButton
-                    android:id="@+id/rb_light"
+                <CheckBox
+                    android:id="@+id/cb_alert_light"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/des_rb_light" />
+            </LinearLayout>
 
-            </RadioGroup>
+            <!--            <RadioGroup
+                            android:id="@+id/rg_alert"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+
+                                android:id="@+id/rb_ring"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:text="@string/des_rb_ring" />
+
+                            <RadioButton
+                                android:id="@+id/rb_vibrate"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/des_rb_vibrate" />
+
+                            <RadioButton
+                                android:id="@+id/rb_light"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/des_rb_light" />
+
+                        </RadioGroup>-->
         </LinearLayout>
     </LinearLayout>
 

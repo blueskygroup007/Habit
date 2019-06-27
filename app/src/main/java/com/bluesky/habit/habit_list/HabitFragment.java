@@ -159,6 +159,15 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
             }
         });
 
+        //
+        ScrollChildSwipeRefreshLayout swipeRefreshLayout = root.findViewById(R.id.refresh_layout);
+        swipeRefreshLayout.setScrollUpChild(listView);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mPresenter.loadHabits(false);
+            }
+        });
         return root;
     }
 

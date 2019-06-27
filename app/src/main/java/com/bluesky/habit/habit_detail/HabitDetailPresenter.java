@@ -1,5 +1,6 @@
 package com.bluesky.habit.habit_detail;
 
+import com.bluesky.habit.data.Habit;
 import com.bluesky.habit.data.source.HabitsRepository;
 
 /**
@@ -21,6 +22,16 @@ public class HabitDetailPresenter implements HabitDetailContract.Presenter {
 
     @Override
     public void start() {
+
+    }
+
+    @Override
+    public void saveHabit(Habit habit) {
+
+    }
+
+    @Override
+    public void populateHabit(String id) {
 
     }
 }

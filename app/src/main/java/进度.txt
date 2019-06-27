@@ -13,5 +13,17 @@ Binder:
 1.3.启动,暂停,取消alarm(停止habit),到时(activity也需要有处理闹钟提醒的dialog,或者让AlarmDialogActivity置顶)
 
 
+设想:
+1.编辑页面的EditText框.双击才允许编辑.这样能防止进入编辑页面后,直接就弹出了软键盘.
+  或者更进一步,双击后,弹出专门用于编辑的Dialog.
+
+进度:
+2.在detail页面中,加载所选的Habit.
+1.将radiogroup换成checkbox,因为前者无法多选.//todo 必须监听checkbox,做到最少选中一个.
+
+
 Bug:
-当item的checkbox点击后,HabitListPresenter的startHabitAlarm执行了两次.
+1.当item的checkbox点击后,HabitListPresenter的startHabitAlarm执行了两次.
+解决:因为setChecked()方法引发了switchButton的change事件.所以,采用setChecked之前取消监听,之后设置监听的方法解决bug
+2.下拉刷新控件一直转动.
+解决:完善下拉后,刷新list,并让下拉刷新控件取消loading指示器的显示.
