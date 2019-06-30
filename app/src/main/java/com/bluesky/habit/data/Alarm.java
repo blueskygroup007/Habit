@@ -6,8 +6,6 @@ import android.os.Parcelable;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 
-import java.io.Serializable;
-import java.util.EnumSet;
 import java.util.Objects;
 
 /**

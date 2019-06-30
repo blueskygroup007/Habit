@@ -11,8 +11,8 @@ import com.bluesky.habit.data.Habit;
  */
 public class HabitDetailContract {
     interface View extends BaseView<Presenter> {
-
-
+        void showHabit(Habit habit);
+        boolean isActive();
     }
 
     interface Presenter extends BasePresenter {

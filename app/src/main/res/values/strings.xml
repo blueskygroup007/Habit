@@ -49,7 +49,7 @@
     <string name="des_title">标题:</string>
     <string name="hint_title">每天多喝水</string>
     <string name="des_content">简介:</string>
-    <string name="hint_content">半小时喝水至少100毫升</string>
+    <string name="hint_content">半小时喝水100毫升</string>
     <string name="des_interval">间隔:</string>
     <string name="des_alert">提醒:</string>
     <string name="des_accept">达成:</string>

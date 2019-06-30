@@ -1,6 +1,7 @@
 package com.bluesky.habit;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.bluesky.habit.constant.AppConstant;
@@ -8,6 +9,7 @@ import com.bluesky.habit.data.Alarm;
 import com.bluesky.habit.data.Habit;
 import com.bluesky.habit.data.source.local.HabitDao;
 import com.bluesky.habit.data.source.local.RHDatabase;
+import com.bluesky.habit.habit_detail.HabitDetailActivity;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +19,7 @@ import java.util.List;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
 
+import static com.bluesky.habit.habit_detail.HabitDetailActivity.EXTRA_HABIT_ID;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -74,7 +77,15 @@ public class ExampleInstrumentedTest {
 
     @Test
     public void detailActivityTest() {
-        Context appContext = InstrumentationRegistry.getTargetContext();
 
+        Context appContext = InstrumentationRegistry.getTargetContext();
+        HabitDao dao = RHDatabase.getInstance(appContext).habitDao();
+        List<Habit> habits = dao.getHabits();
+        System.out.println(habits.toString());
+        Log.e("TEST", habits.get(0).toString());
+        Intent intent = new Intent(appContext, HabitDetailActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(EXTRA_HABIT_ID, habits.get(0).getId());
+        appContext.startActivity(intent);
     }
 }

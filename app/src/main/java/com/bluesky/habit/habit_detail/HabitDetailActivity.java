@@ -9,11 +9,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.databinding.DataBindingUtil;
 
 import com.bluesky.habit.R;
+import com.bluesky.habit.data.Alarm;
+import com.bluesky.habit.data.Habit;
+import com.bluesky.habit.databinding.ActivityDetailBinding;
 import com.bluesky.habit.util.Injection;
-
-import java.util.zip.Inflater;
 
 /**
  * @author BlueSky
@@ -27,11 +29,16 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
     private String mHabitId;
     private HabitDetailPresenter mPresenter;
     private boolean mIsModify = false;
+    private ActivityDetailBinding mBinding;
+
+    private boolean isForeground = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
+//        setContentView(R.layout.activity_detail);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
+
 
         initData();
         initView();
@@ -44,12 +51,12 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
         mHabitId = intent.getStringExtra(EXTRA_HABIT_ID);
         mPresenter = new HabitDetailPresenter(mHabitId, Injection.provideTasksRepository(this), this);
 
-
     }
 
     private void initView() {
-        mToolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
+        //toolbar和左上角返回按钮
+//        mToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(mBinding.toolbar);
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
@@ -98,5 +105,31 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
     @Override
     public void setPresenter(HabitDetailContract.Presenter presenter) {
 
+    }
+
+    @Override
+    public void showHabit(Habit habit) {
+        mBinding.etTitle.setText(habit.getTitle());
+        mBinding.etContent.setText(habit.getDescription());
+        Alarm alarm = habit.getAlarm();
+        mBinding.seekBar.setProgress(alarm.getAlarmInterval() / 1000 / 60);//求几分钟
+    }
+
+    @Override
+    public boolean isActive() {
+
+        return isForeground;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isForeground = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isForeground = true;
     }
 }
