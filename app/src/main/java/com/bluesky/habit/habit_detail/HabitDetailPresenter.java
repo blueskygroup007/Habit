@@ -14,6 +14,7 @@ import com.bluesky.habit.data.source.HabitsRepository;
 public class HabitDetailPresenter implements HabitDetailContract.Presenter, HabitsDataSource.GetHabitCallback {
     private final static String TAG = HabitDetailActivity.class.getSimpleName();
     private final String mHabitId;
+    private Habit mHabit;
     private final HabitsRepository mHabitRespository;
     private final HabitDetailContract.View mView;
 
@@ -29,8 +30,8 @@ public class HabitDetailPresenter implements HabitDetailContract.Presenter, Habi
     }
 
     @Override
-    public void saveHabit(Habit habit) {
-
+    public void saveHabit() {
+        mHabitRespository.saveHabit(mView.updateHabit(mHabit));
     }
 
     @Override
@@ -47,6 +48,7 @@ public class HabitDetailPresenter implements HabitDetailContract.Presenter, Habi
     public void onHabitLoaded(Habit habit) {
         if (mView.isActive()) {
             mView.showHabit(habit);
+            mHabit = habit;
         }
 
     }

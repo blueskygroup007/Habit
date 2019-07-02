@@ -95,7 +95,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_content"
-                    android:lines="5"
+                    android:inputType="textMultiLine"
+                    android:minLines="5"
+                    android:scrollbarStyle="insideOverlay"
+                    android:scrollbars="vertical"
+                    android:scrollHorizontally="false"
+                    android:singleLine="false"
                     tools:text="半小时喝水至少100毫升" />
             </LinearLayout>
         </LinearLayout>
@@ -140,7 +145,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:max="5"
+                    android:max="30"
                     android:progress="1"
                     android:progressDrawable="@drawable/seekbar_progress"
                     android:thumb="@drawable/seekbar_thumb" />

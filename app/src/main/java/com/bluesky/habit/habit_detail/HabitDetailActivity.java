@@ -1,28 +1,34 @@
 package com.bluesky.habit.habit_detail;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 
 import com.bluesky.habit.R;
+import com.bluesky.habit.constant.AppConstant;
 import com.bluesky.habit.data.Alarm;
 import com.bluesky.habit.data.Habit;
 import com.bluesky.habit.databinding.ActivityDetailBinding;
 import com.bluesky.habit.util.Injection;
+import com.bluesky.habit.util.LogUtils;
 
 /**
  * @author BlueSky
  * @date 2019/6/24
  * Description:
  */
-public class HabitDetailActivity extends AppCompatActivity implements HabitDetailContract.View {
+public class HabitDetailActivity extends AppCompatActivity implements HabitDetailContract.View, CompoundButton.OnCheckedChangeListener {
 
     public static final String EXTRA_HABIT_ID = "TASK_ID";
     private Toolbar mToolbar;
@@ -31,7 +37,8 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
     private boolean mIsModify = false;
     private ActivityDetailBinding mBinding;
 
-    private boolean isForeground = false;
+    private boolean isForeground = true;
+    private Habit mHabit;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,7 +71,16 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
     }
 
     private void initEvent() {
+        mBinding.cbAlertRing.setOnCheckedChangeListener(this);
+        mBinding.cbAlertLight.setOnCheckedChangeListener(this);
+        mBinding.cbAlertVibrate.setOnCheckedChangeListener(this);
+    }
 
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (!(mBinding.cbAlertRing.isChecked() | mBinding.cbAlertLight.isChecked() | mBinding.cbAlertVibrate.isChecked())) {
+            buttonView.setChecked(!isChecked);
+        }
     }
 
     @Override
@@ -109,11 +125,95 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
 
     @Override
     public void showHabit(Habit habit) {
+        mHabit = habit;
         mBinding.etTitle.setText(habit.getTitle());
         mBinding.etContent.setText(habit.getDescription());
         Alarm alarm = habit.getAlarm();
         mBinding.seekBar.setProgress(alarm.getAlarmInterval() / 1000 / 60);//求几分钟
+        mBinding.cbAlertRing.setChecked(alarm.getWakeStyle() == AppConstant.WakeStyle.RING);
+        mBinding.cbAlertLight.setChecked(alarm.getWakeStyle() == AppConstant.WakeStyle.LIGHT);
+        mBinding.cbAlertVibrate.setChecked(alarm.getWakeStyle() == AppConstant.WakeStyle.VIBRATE);
+        int indexFeedback = alarm.getAcceptStyle();
+        int indexDelay = alarm.getDelayStyle();
+        switch (indexFeedback) {
+            case 1:
+                mBinding.rgAccept.check(R.id.rb_accept_shake);
+
+                break;
+            case 2:
+                mBinding.rgAccept.check(R.id.rb_accept_turnoff);
+
+                break;
+            case 3:
+                mBinding.rgAccept.check(R.id.rb_accept_cover);
+
+                break;
+            default:
+                mBinding.rgAccept.check(R.id.rb_accept_shake);
+        }
+
+        switch (indexDelay) {
+            case 1:
+                mBinding.rgDelay.check(R.id.rb_delay_shake);
+                break;
+            case 2:
+                mBinding.rgDelay.check(R.id.rb_delay_turnoff);
+
+                break;
+            case 4:
+                mBinding.rgDelay.check(R.id.rb_delay_cover);
+
+                break;
+            default:
+                mBinding.rgDelay.check(R.id.rb_delay_shake);
+
+
+        }
     }
+
+    @Override
+    public Habit updateHabit(Habit habit) {
+        Habit result = habit.clone();
+        result.setTitle(mBinding.etTitle.getText().toString());
+        result.setDescription(mBinding.etContent.getText().toString());
+        Alarm alarm = result.getAlarm();
+        alarm.setAlarmInterval(mBinding.seekBar.getProgress() * 1000 * 60);
+        int indexWake = mBinding.cbAlertRing.isChecked() ? AppConstant.WakeStyle.RING : 0;
+        indexWake += mBinding.cbAlertLight.isChecked() ? AppConstant.WakeStyle.LIGHT : 0;
+        indexWake += mBinding.cbAlertVibrate.isChecked() ? AppConstant.WakeStyle.VIBRATE : 0;
+
+        alarm.setWakeStyle(indexWake);
+        switch (mBinding.rgAccept.getCheckedRadioButtonId()) {
+            case R.id.rb_accept_shake:
+                alarm.setAcceptStyle(AppConstant.AcceptStyle.SHAKE);
+                break;
+            case R.id.rb_accept_turnoff:
+                alarm.setAcceptStyle(AppConstant.AcceptStyle.TURN);
+                break;
+            case R.id.rb_accept_cover:
+                alarm.setAcceptStyle(AppConstant.AcceptStyle.COVER);
+            default:
+                alarm.setAcceptStyle(AppConstant.AcceptStyle.SHAKE);
+        }
+
+        switch (mBinding.rgDelay.getCheckedRadioButtonId()) {
+            case R.id.rb_delay_shake:
+                alarm.setDelayStyle(AppConstant.DelayStyle.SHAKE);
+                break;
+            case R.id.rb_delay_turnoff:
+                alarm.setDelayStyle(AppConstant.DelayStyle.TURN);
+                break;
+            case R.id.rb_delay_cover:
+                alarm.setDelayStyle(AppConstant.DelayStyle.COVER);
+                break;
+            default:
+                alarm.setDelayStyle(AppConstant.DelayStyle.SHAKE);
+                break;
+        }
+        result.setAlarm(alarm);
+        return result;
+    }
+
 
     @Override
     public boolean isActive() {
@@ -131,5 +231,31 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
     protected void onResume() {
         super.onResume();
         isForeground = true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Habit habit = updateHabit(mHabit);
+        //TODO 该写saveHabit方法了...
+        if (habit.equals(mHabit)) {
+            Toast.makeText(getApplicationContext(), "习惯没有改动...", Toast.LENGTH_SHORT).show();
+            finish();
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.create().setTitle("结束编辑");
+            builder.setPositiveButton("保存", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(getApplicationContext(), "习惯已经被保存!", Toast.LENGTH_SHORT).show();
+
+                }
+            }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    HabitDetailActivity.this.finish();
+                }
+            }).show();
+        }
     }
 }

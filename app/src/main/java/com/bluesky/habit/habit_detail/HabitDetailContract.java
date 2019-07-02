@@ -12,11 +12,14 @@ import com.bluesky.habit.data.Habit;
 public class HabitDetailContract {
     interface View extends BaseView<Presenter> {
         void showHabit(Habit habit);
+
+        Habit updateHabit(Habit habit);
+
         boolean isActive();
     }
 
     interface Presenter extends BasePresenter {
-        void saveHabit(Habit habit);
+        void saveHabit();
 
         /**
          * 使用id取habit

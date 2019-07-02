@@ -1,12 +1,8 @@
 package com.bluesky.habit;
 
-import com.bluesky.habit.data.Alarm;
 import com.bluesky.habit.util.TimeUtils;
 
 import org.junit.Test;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 
@@ -73,6 +69,20 @@ public class ExampleUnitTest {
         System.out.println(str + "--" + ii);
 
 
+    }
+
+    @Test
+    public void enumTest() {
+//        int index = Types.WakeStyle.RING.ordinal();
+//        Types.WakeStyle.RING.getVal();
+//        System.out.println("index=    " + index);
+//        System.out.println("Types.WakeStyle.RING=    " + Types.WakeStyle.RING);
+//        System.out.println("Types.WakeStyle.RING.values    " + Types.WakeStyle.RING.getVal());
+//        System.out.println("Types.WakeStyle.RING.values    " + Types.WakeStyle.LIGHT.getVal());
+//        System.out.println("Types.WakeStyle.RING.values    " + Types.WakeStyle.VIBRATE.getVal());
+        boolean a = true;
+        boolean b = true;
+        assertEquals(a, b);
     }
 
 

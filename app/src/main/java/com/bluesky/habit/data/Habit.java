@@ -8,6 +8,7 @@ import com.bluesky.habit.constant.AppConstant;
 import java.util.UUID;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Embedded;
 import androidx.room.Entity;
@@ -20,7 +21,7 @@ import androidx.room.PrimaryKey;
  * Description:
  */
 @Entity
-public class Habit implements Parcelable {
+public class Habit implements Parcelable, Cloneable {
     @Ignore
     private static final int DEFAULT_ICON = AppConstant.DEFAULT_ICON;
     //todo 主键必须有NonNull注解
@@ -30,15 +31,15 @@ public class Habit implements Parcelable {
     @ColumnInfo(name = "id")
     private final String mId;
     @ColumnInfo(name = "icon")
-    private  int mIcon;
+    private int mIcon;
     @ColumnInfo(name = "title")
-    private  String mTitle;
+    private String mTitle;
     @ColumnInfo(name = "description")
-    private  String mDescription;
+    private String mDescription;
     @ColumnInfo(name = "active")
-    private  boolean mActive;
+    private boolean mActive;
     @Embedded
-    private  Alarm mAlarm;
+    private Alarm mAlarm;
 
     /**
      * todo 只留一个构造方法给Room,其余全部Ignore
@@ -66,7 +67,7 @@ public class Habit implements Parcelable {
         mTitle = habit.getTitle();
         mDescription = habit.getDescription();
         mActive = habit.isActive();
-        mAlarm = habit.getAlarm();
+        mAlarm = habit.getAlarm().clone();
     }
 
     @Ignore
@@ -80,12 +81,56 @@ public class Habit implements Parcelable {
     }
 
 
-
     @Ignore
     public Habit(int icon, String title, String description, boolean active, Alarm alarm) {
         this(UUID.randomUUID().toString(), icon, title, description, active, alarm);
     }
 
+    @Override
+    public Habit clone() {
+        Habit habit;
+        try {
+            habit = (Habit) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
+        habit.setAlarm(getAlarm().clone());
+        return habit;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Habit)) {
+            return false;
+        }
+        Habit other = (Habit) obj;
+        if (!(mId .equals(other.getId()))) {
+            return false;
+        }
+        if (!(mIcon == other.getIcon())) {
+            return false;
+        }
+        if (!(mTitle .equals(other.getTitle()))) {
+            return false;
+        }
+        if (!(mDescription .equals(other.getDescription()) )) {
+            return false;
+        }
+        if (!(mActive == other.isActive())) {
+            return false;
+        }
+        if (!(mAlarm.equals(other.getAlarm()))) {
+            return false;
+        }
+        return true;
+    }
 
     protected Habit(Parcel in) {
         mId = in.readString();

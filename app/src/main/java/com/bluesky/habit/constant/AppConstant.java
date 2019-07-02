@@ -24,4 +24,30 @@ public class AppConstant {
             R.drawable.ic_person_black_24dp,
             R.drawable.ic_pool_black_24dp
     };
+
+
+    public interface WakeStyle {
+        int RING = 1;
+        int LIGHT = 2;
+        int VIBRATE = 4;
+
+    }
+
+    public interface AcceptStyle {
+        int SHAKE = 1;
+        int TURN = 2;
+        int COVER = 4;
+    }
+
+    public interface DelayStyle{
+        int SHAKE = 1;
+        int TURN = 2;
+        int COVER = 4;
+    }
+
+    public interface VibrateStyle {
+        int LIGHT = 1;
+        int MEDIUM = 2;
+        int HEAVY = 4;
+    }
 }
