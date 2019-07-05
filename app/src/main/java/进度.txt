@@ -19,12 +19,34 @@ Binder:
 
 进度:
 
+* //todo 让Activity重新恢复,或者重新创建的时候,各控件状态与后台同步的方案.
+    1.参考XpressMusic,在Activity的onServiceConnected()方法中.跟Service要数据和状态
+    initCurrentPlayInfo(mMusicServiceBinder.getCurrentPlayInfo());
+
+    /** 获取当前播放的信息 */
+    public Bundle getCurrentPlayInfo()
+
+    /** 初始化当前播放信息 */
+    private void initCurrentPlayInfo(Bundle bundle)
+
+    * //todo Service只需要维护一个活动的Habit列表.(总列表也无所谓)
+
+* //todo 理念:终究是Activity向Service发请求.由Service来处理,并在处理后通知Activity.
+
+* Habit列表加载时的排序.读取数据时加入排序参数
+* 编辑页面刚一进入,不要弹出软键盘
+* 达成和推迟的radiobutton互斥
+
+
 修改seekbar等UI小bug.
-目前问题是:数据库总在累加,查看ID是否相同.
+目前问题是:数据库总在累加,查看ID是否相同.//todo 已经查看,暂无问题
 
 2.在detail页面中,加载所选的Habit.
 1.将radiogroup换成checkbox,因为前者无法多选.//todo 必须监听checkbox,做到最少选中一个.
 
+
+//todo 注意事项:
+1.数据库修改后,启动会报错.简单的解决方案是:要么删除原数据库目录,要么升级数据库版本号
 
 Bug:
 1.当item的checkbox点击后,HabitListPresenter的startHabitAlarm执行了两次.

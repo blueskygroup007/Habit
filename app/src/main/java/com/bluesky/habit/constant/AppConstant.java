@@ -9,6 +9,7 @@ import com.bluesky.habit.R;
  */
 public class AppConstant {
     //一些调试开关放在了这里
+    public static final boolean FIRST_RUN_SPLASH=false;
     public static final boolean FIRST_LOAD_ON_NETWORK = false;
 
     public static final int DEFAULT_ICON = 0;

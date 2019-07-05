@@ -8,11 +8,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.bluesky.habit.R;
+import com.bluesky.habit.util.LogUtils;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+
+import static com.bluesky.habit.constant.AppConstant.FIRST_RUN_SPLASH;
 
 public class SplashActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -30,6 +33,7 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
                 if (position == pages.length - 1) {
                     mBtnGotoMain.setVisibility(View.VISIBLE);
                 } else {
@@ -39,7 +43,14 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onPageSelected(int position) {
-
+                LogUtils.d("当前页面为:     " + position);
+                if (position == 1) {
+                    if (!FIRST_RUN_SPLASH) {
+                        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }
             }
 
             @Override
