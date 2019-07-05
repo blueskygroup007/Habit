@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -74,6 +75,22 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
         mBinding.cbAlertRing.setOnCheckedChangeListener(this);
         mBinding.cbAlertLight.setOnCheckedChangeListener(this);
         mBinding.cbAlertVibrate.setOnCheckedChangeListener(this);
+        mBinding.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mBinding.tvSeekbar.setText(progress + "分钟");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     @Override
@@ -87,7 +104,7 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home://左上角的返回按钮
-                finish();
+                onBackPressed();
         }
         return true;
     }
@@ -129,7 +146,9 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
         mBinding.etTitle.setText(habit.getTitle());
         mBinding.etContent.setText(habit.getDescription());
         Alarm alarm = habit.getAlarm();
-        mBinding.seekBar.setProgress(alarm.getAlarmInterval() / 1000 / 60);//求几分钟
+        //求几分钟
+        mBinding.seekBar.setProgress(alarm.getAlarmInterval() / 1000 / 60);
+        mBinding.tvSeekbar.setText(alarm.getAlarmInterval() / 1000 / 60 + "分钟");
         mBinding.cbAlertRing.setChecked(alarm.getWakeStyle() == AppConstant.WakeStyle.RING);
         mBinding.cbAlertLight.setChecked(alarm.getWakeStyle() == AppConstant.WakeStyle.LIGHT);
         mBinding.cbAlertVibrate.setChecked(alarm.getWakeStyle() == AppConstant.WakeStyle.VIBRATE);
@@ -242,12 +261,14 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
             finish();
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.create().setTitle("结束编辑");
+            builder.setTitle("提示").setIcon(R.drawable.ic_save_black_24dp).setMessage("退出前是否需要保存?");
+
             builder.setPositiveButton("保存", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     Toast.makeText(getApplicationContext(), "习惯已经被保存!", Toast.LENGTH_SHORT).show();
-
+                    mPresenter.saveHabit();
+                    HabitDetailActivity.this.finish();
                 }
             }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
                 @Override
@@ -255,7 +276,7 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
                     dialog.dismiss();
                     HabitDetailActivity.this.finish();
                 }
-            }).show();
+            }).create().show();
         }
     }
 }

@@ -8,6 +8,9 @@ import com.bluesky.habit.R;
  * Description:
  */
 public class AppConstant {
+    //一些调试开关放在了这里
+    public static final boolean FIRST_LOAD_ON_NETWORK = false;
+
     public static final int DEFAULT_ICON = 0;
     public static final int[] HABIT_ICONS = {R.drawable.ic_access_alarm_black_24dp,
             R.drawable.ic_cloud_black_24dp,
@@ -39,7 +42,7 @@ public class AppConstant {
         int COVER = 4;
     }
 
-    public interface DelayStyle{
+    public interface DelayStyle {
         int SHAKE = 1;
         int TURN = 2;
         int COVER = 4;

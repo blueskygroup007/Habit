@@ -50,7 +50,6 @@ public class HabitDetailPresenter implements HabitDetailContract.Presenter, Habi
             mView.showHabit(habit);
             mHabit = habit;
         }
-
     }
 
     /**

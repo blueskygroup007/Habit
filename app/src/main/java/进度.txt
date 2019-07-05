@@ -18,6 +18,10 @@ Binder:
   或者更进一步,双击后,弹出专门用于编辑的Dialog.
 
 进度:
+
+修改seekbar等UI小bug.
+目前问题是:数据库总在累加,查看ID是否相同.
+
 2.在detail页面中,加载所选的Habit.
 1.将radiogroup换成checkbox,因为前者无法多选.//todo 必须监听checkbox,做到最少选中一个.
 

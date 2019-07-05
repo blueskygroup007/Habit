@@ -16,6 +16,7 @@ import com.bluesky.habit.util.LogUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.bluesky.habit.constant.AppConstant.FIRST_LOAD_ON_NETWORK;
 import static com.bluesky.habit.service.ForegroundService.ACTION_PLAY;
 import static com.bluesky.habit.service.ForegroundService.ACTION_STOP;
 import static com.bluesky.habit.service.ForegroundService.EXTRA_HABIT;
@@ -143,6 +144,9 @@ public class HabitListPresenter implements HabitListContract.Presenter {
     @Override
     public void loadHabits(boolean forceUpdate) {
         //首次加载时,强制网络加载
+        if (!FIRST_LOAD_ON_NETWORK){
+            mFirstLoad=false;
+        }
         loadHabits(forceUpdate || mFirstLoad, true);
         mFirstLoad = false;
     }

@@ -94,6 +94,7 @@
                     style="@style/EditTextContentStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="top"
                     android:hint="@string/hint_content"
                     android:inputType="textMultiLine"
                     android:minLines="5"
@@ -144,17 +145,20 @@
                     android:id="@+id/seekBar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="4"
                     android:max="30"
+                    android:min="1"
                     android:progress="1"
                     android:progressDrawable="@drawable/seekbar_progress"
                     android:thumb="@drawable/seekbar_thumb" />
 
                 <TextView
-                    style="@style/TextViewDescriptionStyle"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tv_seekbar"
+                    android:layout_width="48dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/des_minute" />
+                    android:gravity="end"
+                    android:text="@string/des_minute"
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
