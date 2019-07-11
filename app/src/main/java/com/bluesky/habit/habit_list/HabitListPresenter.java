@@ -9,6 +9,7 @@ import com.bluesky.habit.activity.MainActivity;
 import com.bluesky.habit.data.Habit;
 import com.bluesky.habit.data.source.HabitsDataSource;
 import com.bluesky.habit.data.source.HabitsRepository;
+import com.bluesky.habit.service.ForeAlarmPresenter;
 import com.bluesky.habit.service.ForegroundService;
 import com.bluesky.habit.util.EspressoIdlingResource;
 import com.bluesky.habit.util.LogUtils;
@@ -34,6 +35,45 @@ public class HabitListPresenter implements HabitListContract.Presenter {
     private boolean mFirstLoad = true;
     private Context mContext;
     private ForegroundService.ForeControlBinder mBinder;
+    private ForeAlarmPresenter.OnControlListener mListener=new ForeAlarmPresenter.OnControlListener() {
+        @Override
+        public void onHabitProcessed(Habit habit) {
+            if (mView.isActive()){
+                mView.refreshHabitItem(habit);
+            }
+        }
+
+        @Override
+        public void onHabitStarted() {
+            LogUtils.d(TAG, "HabitStarted回调了...");
+
+        }
+
+        @Override
+        public void onHabitPaused() {
+
+        }
+
+        @Override
+        public void onHabitStopped() {
+
+        }
+
+        @Override
+        public void onHabitAccepted() {
+
+        }
+
+        @Override
+        public void onHabitSkipped() {
+
+        }
+
+        @Override
+        public void onHabitTimeUp() {
+
+        }
+    };
 
     public HabitListPresenter(Context context, HabitsRepository repository, ForegroundService.ForeControlBinder binder, HabitListContract.View view) {
         mRepository = repository;
@@ -41,37 +81,7 @@ public class HabitListPresenter implements HabitListContract.Presenter {
         mBinder = binder;
         mContext = context;
         mView.setPresenter(this);
-        mBinder.registerOnControlListener(new ForegroundService.OnControlListener() {
-            @Override
-            public void onHabitStarted() {
-                LogUtils.d(TAG, "HabitStarted回调了...");
-            }
-
-            @Override
-            public void onHabitPaused() {
-
-            }
-
-            @Override
-            public void onHabitStopped() {
-
-            }
-
-            @Override
-            public void onHabitAccepted() {
-
-            }
-
-            @Override
-            public void onHabitSkipped() {
-
-            }
-
-            @Override
-            public void onHabitTimeUp() {
-
-            }
-        });
+        mBinder.registerOnControlListener(mListener);
     }
 
     /**
@@ -83,37 +93,7 @@ public class HabitListPresenter implements HabitListContract.Presenter {
     public void setService(Binder service) {
         //todo 这里强转,是否要判断一下
         mBinder = (ForegroundService.ForeControlBinder) service;
-        mBinder.registerOnControlListener(new ForegroundService.OnControlListener() {
-            @Override
-            public void onHabitStarted() {
-                LogUtils.d(TAG, "HabitStarted回调了...");
-            }
-
-            @Override
-            public void onHabitPaused() {
-
-            }
-
-            @Override
-            public void onHabitStopped() {
-
-            }
-
-            @Override
-            public void onHabitAccepted() {
-
-            }
-
-            @Override
-            public void onHabitSkipped() {
-
-            }
-
-            @Override
-            public void onHabitTimeUp() {
-
-            }
-        });
+        mBinder.registerOnControlListener(mListener);
     }
 
     @Override
@@ -140,6 +120,9 @@ public class HabitListPresenter implements HabitListContract.Presenter {
 
         mContext.startService(intent);
     }
+
+
+
 
     @Override
     public void loadHabits(boolean forceUpdate) {
@@ -284,5 +267,7 @@ public class HabitListPresenter implements HabitListContract.Presenter {
         loadHabits(false);
     }
 
-
+    public void onDestory(){
+        mBinder.unregisterOnControlListener(mListener);
+    }
 }

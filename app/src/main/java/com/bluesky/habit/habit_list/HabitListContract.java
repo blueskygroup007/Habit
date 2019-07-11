@@ -125,5 +125,10 @@ public interface HabitListContract {
         //Todo 判断当前view是否可见,避免Presenter中的子线程任务完成后,
         //Todo 回调view来刷新UI时,view已经销毁,发生空指针
         boolean isActive();
+
+        /**
+         * 刷新单个Habit的Item显示
+         */
+        void refreshHabitItem(Habit habit);
     }
 }

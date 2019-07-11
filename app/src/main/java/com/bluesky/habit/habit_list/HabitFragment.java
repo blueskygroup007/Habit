@@ -3,6 +3,7 @@ package com.bluesky.habit.habit_list;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import com.suke.widget.SwitchButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -76,6 +78,7 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
     private LinearLayout mHabitsView;
 
     private TextView mFilteringLabelView;
+    private ListView mListView;
 
 
     /**
@@ -134,8 +137,8 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_habit_list, container, false);
         //初始化任务列表视图
-        ListView listView = root.findViewById(R.id.lv_task_list);
-        listView.setAdapter(mAdapter);
+        mListView = root.findViewById(R.id.lv_task_list);
+        mListView.setAdapter(mAdapter);
 //        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //            @Override
 //            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -161,7 +164,7 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
         //
         ScrollChildSwipeRefreshLayout swipeRefreshLayout = root.findViewById(R.id.refresh_layout);
-        swipeRefreshLayout.setScrollUpChild(listView);
+        swipeRefreshLayout.setScrollUpChild(mListView);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -299,6 +302,56 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
     }
 
     @Override
+    public void refreshHabitItem(Habit habit) {
+        //todo 两种实现方法:
+//        mAdapter.updateView(int,ListView);
+        updateItem(mListView, habit);
+    }
+
+
+    /**
+     * 单独更新某个listview的item显示,并更新数据源
+     *
+     * @param listView
+     * @param habit
+     */
+    private void updateItem(ListView listView, Habit habit) {
+        if (listView != null) {
+            int first = listView.getFirstVisiblePosition();
+            int end = listView.getLastVisiblePosition();
+            int position = 0;
+            for (int i = first; i <= end; i++) {
+                if (habit.getId().equals(((Habit) listView.getItemAtPosition(i)).getId())) {
+                    position = i;
+                    break;
+                }
+            }
+            if (position >= first && position <= end) {
+                View view = listView.getChildAt(position - first);
+                HabitAdapter.ViewHolder holder = (HabitAdapter.ViewHolder) view.getTag();
+                long ms = habit.getAlarm().getAlarmCurrent();
+                String currentTime = TimeUtils.secToTime(new Long(ms / 1000).intValue());
+                holder.pb_time.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        holder.pb_time.setPercentage(habit.getAlarm().getAlarmCurrent() * 360 / habit.getAlarm().getAlarmInterval());
+                        holder.pb_time.setStepCountText(currentTime);
+                    }
+                });
+
+//                mAdapter.updateItem(habit);
+
+            } else {
+                //todo 如果目标位置不在显示区域
+//                mAdapter.updateItem(habit);
+
+            }
+
+        }
+    }
+
+
+    @Override
     public void setPresenter(HabitListContract.Presenter presenter) {
         mPresenter = checkNotNull(presenter);
     }
@@ -322,19 +375,44 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
     private class HabitAdapter extends BaseAdapter {
 
         private List<Habit> mHabits;
+        private Map<String, Habit> mHabitMap = new ArrayMap<>();
         private ItemListener mItemListener;
         private SwitchButton.OnCheckedChangeListener mSwitchButtonOnChangeListener;
 
         public HabitAdapter(List<Habit> habits, ItemListener itemListener) {
             mHabits = habits;
+            for (Habit habit : habits
+            ) {
+                mHabitMap.put(habit.getId(), habit);
+            }
             mItemListener = itemListener;
         }
 
+        /**
+         * 重设所有数据,并刷新
+         *
+         * @param habits
+         */
         public void replaceData(List<Habit> habits) {
             setList(habits);
             LogUtils.i(TAG, "habit列表个数是:......" + habits.size());
 
             notifyDataSetChanged();
+        }
+
+        /**
+         * 重设单个数据(因为item对应的条目不在当前显示区域)
+         *
+         * @param modifyHabit
+         */
+        public void updateItem(Habit modifyHabit) {
+            for (Habit habit :
+                    mHabits) {
+                if (habit.getId().equals(modifyHabit.getId())) {
+                    mHabits.set(mHabits.indexOf(habit), modifyHabit);
+                    notifyDataSetChanged();
+                }
+            }
         }
 
         private void setList(List<Habit> habits) {
@@ -428,6 +506,7 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
             return convertView;
         }
+
 
         class ViewHolder {
             ConstraintLayout root;

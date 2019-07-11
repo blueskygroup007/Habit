@@ -17,15 +17,17 @@ public class AppExecutors {
     private final Executor diskIO;
     private final Executor networkIO;
     private final Executor mainThread;
+    private final Executor monitorThread;
 
-    public AppExecutors(Executor diskIO, Executor networkIO, Executor mainThread) {
+    public AppExecutors(Executor diskIO, Executor networkIO, Executor mainThread, Executor monitorThread) {
         this.diskIO = diskIO;
         this.networkIO = networkIO;
         this.mainThread = mainThread;
+        this.monitorThread = monitorThread;
     }
 
     public AppExecutors() {
-        this(new DiskIOThreadExecutor(), Executors.newFixedThreadPool(THREAD_COUNT), new MainThreadExecutor());
+        this(new DiskIOThreadExecutor(), Executors.newFixedThreadPool(THREAD_COUNT), new MainThreadExecutor(), Executors.newCachedThreadPool());
     }
 
     public Executor getDiskIO() {
@@ -38,6 +40,10 @@ public class AppExecutors {
 
     public Executor getMainThread() {
         return mainThread;
+    }
+
+    public Executor getMonitorThread() {
+        return monitorThread;
     }
 
     private static class MainThreadExecutor implements Executor {

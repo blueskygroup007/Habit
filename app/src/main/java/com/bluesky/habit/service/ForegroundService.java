@@ -44,7 +44,6 @@ public class ForegroundService extends Service {
     public static final String EXTRA_HABIT = "extra_habit";
     private ForeAlarmPresenter mPresenter;
 
-    private List<OnControlListener> mOnControlListeners = new ArrayList<>();
 
     /**
      * todo 这里主要是响应客户端的复杂指令
@@ -56,17 +55,31 @@ public class ForegroundService extends Service {
          *
          * @param listener
          */
-        public void registerOnControlListener(OnControlListener listener) {
-            mOnControlListeners.add(listener);
+        public void registerOnControlListener(ForeAlarmPresenter.OnControlListener listener) {
+            mPresenter.registerOnControlListener(listener);
         }
 
-        public void unregisterOnControlListener(OnControlListener listener) {
-            mOnControlListeners.remove(listener);
+        public void unregisterOnControlListener(ForeAlarmPresenter.OnControlListener listener) {
+            mPresenter.unregisterOnControlListener(listener);
         }
 
-        /**todo 这里应该放置 "允许bind到service的客户端" 的主动方法.
-         * todo 例如:设置当前habit列表;
+        /**
+         * todo 放置 "允许bind到service"的客户的主动方法.--------------------------------------
          */
+
+        public void setActiveHabitList(List<Habit> list) {
+            mPresenter.setActiveHabitList(list);
+        }
+
+        public List<Habit> getActiveHabitList() {
+            return mPresenter.getActiveHabitList();
+        }
+
+        /**
+         * //todo 获取即时信息-----------------------------------------
+         * //todo getActiveHabitList应该就是了
+         */
+
 
         /**
          * todo 该方法执行时机是Bind(绑定)ForeService,
@@ -105,10 +118,21 @@ public class ForegroundService extends Service {
     public static final String ACTION_PLAY = "com.bluesky.habit.action.PLAY";
     public static final String ACTION_PAUSE = "com.bluesky.habit.action.PAUSE";
     public static final String ACTION_STOP = "com.bluesky.habit.action.STOP";
+    /**
+     * habit的alarm计时到期了
+     */
     public static final String ACTION_TIMEUP = "com.bluesky.habit.action.TIMEUP";
     public static final String ACTION_ACCEPT = "com.bluesky.habit.action.ACCEPT";
     public static final String ACTION_SKIP = "com.bluesky.habit.action.SKIP";
+    /**
+     * 关闭前台service的通知栏
+     */
     public static final String ACTION_DISMISS = "com.bluesky.habit.action.DISMISS";
+    /**
+     * 每分钟更新
+     */
+    public static final String ACTION_PROCESSED = "com.bluesky.habit.action.PROCESSED";
+
 
     /**
      * 这里是被客户端通过发送intent,设置action来启动的方法.
@@ -127,48 +151,23 @@ public class ForegroundService extends Service {
         switch (action) {
             case ACTION_PLAY:
                 LogUtils.d(TAG, "使用Action方式启动一个Habit...");
-
-                mPresenter.startAlarm(alarm);
-                for (OnControlListener listener : mOnControlListeners
-                ) {
-                    listener.onHabitStarted();
-                }
+                mPresenter.activeHabit(habit);
                 break;
             case ACTION_PAUSE:
                 mPresenter.pauseAlarm(alarm);
-                for (OnControlListener listener : mOnControlListeners
-                ) {
-                    listener.onHabitPaused();
-                }
                 break;
             case ACTION_STOP:
                 LogUtils.d(TAG, "使用Action方式cancel一个Habit...");
-
-                mPresenter.stopAlarm(alarm);
-                for (OnControlListener listener : mOnControlListeners
-                ) {
-                    listener.onHabitStopped();
-                }
+                mPresenter.disableHabit(habit);
                 break;
             case ACTION_ACCEPT:
                 mPresenter.onAlarmAccept(alarm);
-                for (OnControlListener listener : mOnControlListeners
-                ) {
-                    listener.onHabitAccepted();
-                }
+                break;
             case ACTION_SKIP:
                 mPresenter.onAlarmSkip(alarm);
-                for (OnControlListener listener : mOnControlListeners
-                ) {
-                    listener.onHabitSkipped();
-                }
                 break;
             case ACTION_TIMEUP:
-                mPresenter.onAlarmSkip(alarm);
-                for (OnControlListener listener : mOnControlListeners
-                ) {
-                    listener.onHabitTimeUp();
-                }
+                mPresenter.onAlarmTimeIsUp(alarm);
                 break;
             case ACTION_DISMISS:
                 doDissmiss();
@@ -178,7 +177,6 @@ public class ForegroundService extends Service {
                 startForeground(ID, createNoti());
                 break;
         }
-
         return START_STICKY;
     }
 
@@ -237,28 +235,8 @@ public class ForegroundService extends Service {
         super.onDestroy();
         stopForeground(true);
 
-        mOnControlListeners.clear();
-        mOnControlListeners = null;
+        mPresenter.onDestory();
     }
 
-    /**
-     * 所有需要通知监听者的动作接口
-     */
-    public interface OnControlListener {
-        void onHabitStarted();
 
-        void onHabitPaused();
-
-        void onHabitStopped();
-
-        void onHabitAccepted();
-
-        void onHabitSkipped();
-
-        void onHabitTimeUp();
-
-        /**
-         * todo 这里写需要被动通知的方法
-         */
-    }
 }

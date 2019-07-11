@@ -3,43 +3,70 @@ package com.bluesky.habit.service;
 import com.bluesky.habit.base.BasePresenter;
 import com.bluesky.habit.base.BaseView;
 import com.bluesky.habit.data.Alarm;
+import com.bluesky.habit.data.Habit;
+
+import java.util.List;
 
 public interface ForeContract {
 
     interface ForePresenter extends BasePresenter {
+        //        public void addActiveHabit(Habit habit);
+//        public void deleteActiveHabit(Habit habit);
+        void setActiveHabitList(List<Habit> list);
 
+        List<Habit> getActiveHabitList();
 
-        /**
-         * 启动闹钟
-         *
-         * @param alarm
-         */
-        void startAlarm(Alarm alarm);
+        void registerOnControlListener(ForeAlarmPresenter.OnControlListener listener);
 
-        /**
-         * 停止闹钟
-         *
-         * @param alarm
-         */
-        void stopAlarm(Alarm alarm);
+        void unregisterOnControlListener(ForeAlarmPresenter.OnControlListener listener);
 
         /**
-         * 暂停闹钟
+         * 激活一个habit
          *
-         * @param alarm
+         * @param habit
          */
-        void pauseAlarm(Alarm alarm);
+        void activeHabit(Habit habit);
 
         /**
-         * 闹钟计时到了
+         * 取消一个habit
          *
-         * @param alarm
+         * @param habit
          */
-        void onAlarmTimeIsUp(Alarm alarm);
+        void disableHabit(Habit habit);
 
-        void onAlarmAccept(Alarm alarm);
+        void pauseabit(Habit habit);
 
-        void onAlarmSkip(Alarm alarm);
+//        /**
+//         * 启动闹钟
+//         *
+//         * @param alarm
+//         */
+//        void startAlarm(Alarm alarm);
+//
+//        /**
+//         * 停止闹钟
+//         *
+//         * @param alarm
+//         */
+//        void stopAlarm(Alarm alarm);
+//
+//        /**
+//         * 暂停闹钟
+//         *
+//         * @param alarm
+//         */
+//        void pauseAlarm(Alarm alarm);
+//
+//        /**
+//         * 闹钟计时到了
+//         *
+//         * @param alarm
+//         */
+//        void onAlarmTimeIsUp(Alarm alarm);
+//
+//        void onAlarmAccept(Alarm alarm);
+//
+//        void onAlarmSkip(Alarm alarm);
 
         /**
          * 停止加速度监听服务
