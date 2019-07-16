@@ -117,7 +117,7 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
         return mMonitor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                habit.getAlarm().setAlarmCurrent(habit.getAlarm().getAlarmCurrent() + 10 * 1000);
+                habit.getAlarm().setAlarmCurrent(habit.getAlarm().getAlarmCurrent() + 1 * 1000);
                 LogUtils.i("Thread-run", "Monitor Thread ...." + habit.getTitle() + "current=" + habit.getAlarm().getAlarmCurrent());
 
                 for (OnControlListener listener : mOnControlListeners
@@ -126,11 +126,16 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
                     listener.onHabitProcessed(habit);
                 }
             }
-        }, 10, 10, TimeUnit.SECONDS);
+        }, 1, 1, TimeUnit.SECONDS);
 
 
     }
 
+    /**
+     * 关闭监听线程
+     * @param habit
+     * @return
+     */
     private String stopMonitor(Habit habit) {
         ScheduledFuture future = mMonitorMap.get(habit.getId());
         if (null != future) {

@@ -28,6 +28,11 @@
                 android:gravity="center_vertical"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/grey" />
+
             <ListView
                 android:id="@+id/lv_task_list"
                 android:layout_width="match_parent"

@@ -6,7 +6,7 @@
     android:id="@+id/constraintlayout"
     android:layout_width="match_parent"
     android:layout_height="@dimen/hight_item_huge"
-    android:background="@drawable/touch_feedback"
+    android:background="@drawable/touch_feedback_list_item"
     android:clickable="true"
     android:orientation="horizontal">
 

@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+
 import com.bluesky.habit.R;
 import com.bluesky.habit.activity.MainActivity;
 import com.bluesky.habit.data.Alarm;
@@ -15,11 +18,7 @@ import com.bluesky.habit.util.Injection;
 import com.bluesky.habit.util.LogUtils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 
 /**
  * @author BlueSky
@@ -174,7 +173,6 @@ public class ForegroundService extends Service {
                 break;
             default:
                 LogUtils.e(TAG, "前台服务首次启动了.onStartCommand 和startForeground.....");
-                startForeground(ID, createNoti());
                 break;
         }
         return START_STICKY;
@@ -183,12 +181,14 @@ public class ForegroundService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        LogUtils.e(TAG, "创建ForegroundService...");
+        LogUtils.e(TAG, "创建前台ForegroundService...");
+        startForeground(ID, createNoti());
+        LogUtils.e(TAG, "创建ForeAlarmPresenter...");
+
         if (mPresenter == null) {
             mPresenter = new ForeAlarmPresenter(ForegroundService.this, Injection.provideTasksRepository(ForegroundService.this));
         }
         mPresenter.start();
-
     }
 
     private void doDissmiss() {

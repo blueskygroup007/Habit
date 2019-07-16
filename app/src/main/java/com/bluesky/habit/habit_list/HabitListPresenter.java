@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Binder;
 import android.util.Log;
 
-import com.bluesky.habit.activity.MainActivity;
 import com.bluesky.habit.data.Habit;
 import com.bluesky.habit.data.source.HabitsDataSource;
 import com.bluesky.habit.data.source.HabitsRepository;
@@ -267,6 +266,10 @@ public class HabitListPresenter implements HabitListContract.Presenter {
         loadHabits(false);
     }
 
+    /**
+     * 注销监听器,因为该方法不在契约类中,且fragment声明的是Presenter.所以无法调用.
+     * 可以查看Xpressmusic源码有无必要析构,再决定是否调用
+     */
     public void onDestory(){
         mBinder.unregisterOnControlListener(mListener);
     }

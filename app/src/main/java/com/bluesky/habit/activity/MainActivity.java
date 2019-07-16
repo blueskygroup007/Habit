@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.bluesky.habit.Listener.OnFragmentInteractionListener;
 import com.bluesky.habit.R;
+import com.bluesky.habit.data.Habit;
 import com.bluesky.habit.discover.DiscoverFragment;
 import com.bluesky.habit.habit_list.HabitFragment;
 import com.bluesky.habit.habit_list.HabitListPresenter;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
     @Override
     protected void onDestroy() {
+        LogUtils.i(TAG, "Activity onDestroy()...");
         super.onDestroy();
         //不释放,会报错
         unbindService(mConn);
@@ -53,9 +55,11 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     ServiceConnection mConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            LogUtils.e(TAG, "onServiceConnected被回调了...");
+            LogUtils.e(TAG, "onServiceConnected()...");
 
             mBinder = (ForegroundService.ForeControlBinder) service;
+            //todo activity恢复,从service获取即时状态
+            updateCurrentHabitList(mBinder.getActiveHabitList());
             initFragment();
 
 //            mPresenter.setService();
@@ -63,9 +67,18 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            LogUtils.e(TAG, "onServiceDisconnected被回调了...");
+            LogUtils.e(TAG, "onServiceDisconnected()...");
         }
     };
+
+    /**
+     * 从service获取即时状态
+     *
+     * @param activeHabitList
+     */
+    private void updateCurrentHabitList(List<Habit> activeHabitList) {
+
+    }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -121,6 +134,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LogUtils.i(TAG, "Activity onCreate()...");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -132,7 +147,40 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+    }
+
+    /**
+     * 把bindService放在该方法内的原因是:当主界面长时间不可见时,恢复可见马上绑定Service,
+     * 绑定成功后,马上就会取当前的各个Habit进度,主动更新列表状态
+     */
+    @Override
+    protected void onStart() {
+        LogUtils.i(TAG, "Activity onStart()...");
+
+        super.onStart();
         bindService(new Intent(this, ForegroundService.class), mConn, BIND_AUTO_CREATE);
+
+    }
+
+    @Override
+    protected void onResume() {
+        LogUtils.i(TAG, "Activity onResume()...");
+
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        LogUtils.i(TAG, "Activity onPause()...");
+
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        LogUtils.i(TAG, "Activity onStop()...");
+
+        super.onStop();
     }
 
     private void initFragment() {

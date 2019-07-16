@@ -50,7 +50,7 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
-    private static final String TAG = HabitFragment.class.getSimpleName().toString();
+    private static final String TAG = HabitFragment.class.getSimpleName();
     public static final String ARG_BINDER = "foregroundservice_binder";
     // TODO: Customize parameters
     private int mColumnCount = 1;
@@ -100,6 +100,8 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        LogUtils.i(TAG, "Fragment onCreate()...");
+
         super.onCreate(savedInstanceState);
 
 
@@ -109,7 +111,6 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
         if (savedInstanceState != null) {
             mBinder = (ForegroundService.ForeControlBinder) savedInstanceState.getSerializable(ARG_BINDER);
         } else {
-
             if (getArguments() != null) {
                 mBinder = (ForegroundService.ForeControlBinder) getArguments().getSerializable(ARG_BINDER);
             }
@@ -126,15 +127,20 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
     @Override
     public void onResume() {
+        LogUtils.i(TAG, "Fragment onResume()...");
+
         super.onResume();
         //P的启动入口
-
         mPresenter.start();
+        //更新列表即时状态
+        mAdapter.replaceData(mBinder.getActiveHabitList());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        LogUtils.i(TAG, "Fragment onCreateView()...");
+
         View root = inflater.inflate(R.layout.fragment_habit_list, container, false);
         //初始化任务列表视图
         mListView = root.findViewById(R.id.lv_task_list);
@@ -177,6 +183,8 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
     @Override
     public void onAttach(Context context) {
+        LogUtils.i(TAG, "Fragment onAttach()...");
+
         super.onAttach(context);
         if (context instanceof OnListFragmentInteractionListener) {
             mListener = (OnListFragmentInteractionListener) context;
@@ -188,8 +196,52 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
     @Override
     public void onDetach() {
+        LogUtils.i(TAG, "Fragment onDetach()...");
+
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onPause() {
+        LogUtils.i(TAG, "Fragment onPause()...");
+
+        super.onPause();
+    }
+
+    @Override
+    public void onStart() {
+        LogUtils.i(TAG, "Fragment onStart()...");
+
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        LogUtils.i(TAG, "Fragment onStop()...");
+
+        super.onStop();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        LogUtils.i(TAG, "Fragment onActivityCreated()...");
+
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onDestroy() {
+        LogUtils.i(TAG, "Fragment onDestroy()...");
+
+        super.onDestroy();
+    }
+
+    @Override
+    public void onDestroyView() {
+        LogUtils.i(TAG, "Fragment onDestroyView()...");
+
+        super.onDestroyView();
     }
 
     private void showNoTasksViews(String mainText, int iconRes, boolean showAddView) {
@@ -538,13 +590,12 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
             //todo 这里只是启动和取消alarm了.还没有更新Repository,也没有更新列表(列表有分类显示:活动的,暂停的)
             //todo 也没有刷新列表
             mPresenter.completeHabit(completedHabit);
-//            mPresenter.cancelHabitAlarm(completedHabit);
         }
 
         @Override
         public void onActivateTaskClick(Habit activatedHabit) {
             mPresenter.activateHabit(activatedHabit);
-//            mPresenter.startHabitAlarm(activatedHabit);
         }
     };
+
 }
