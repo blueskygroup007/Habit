@@ -15,6 +15,7 @@ import com.bluesky.habit.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.bluesky.habit.constant.AppConstant.FIRST_LOAD_ON_NETWORK;
 import static com.bluesky.habit.service.ForegroundService.ACTION_PLAY;
@@ -34,11 +35,11 @@ public class HabitListPresenter implements HabitListContract.Presenter {
     private boolean mFirstLoad = true;
     private Context mContext;
     private ForegroundService.ForeControlBinder mBinder;
-    private ForeAlarmPresenter.OnControlListener mListener=new ForeAlarmPresenter.OnControlListener() {
+    private ForeAlarmPresenter.OnControlListener mListener = new ForeAlarmPresenter.OnControlListener() {
         @Override
-        public void onHabitProcessed(Habit habit) {
-            if (mView.isActive()){
-                mView.refreshHabitItem(habit);
+        public void onHabitProcessed(String id, int currentSec) {
+            if (mView.isActive()) {
+                mView.refreshHabitItem(id, currentSec);
             }
         }
 
@@ -73,6 +74,7 @@ public class HabitListPresenter implements HabitListContract.Presenter {
 
         }
     };
+
 
     public HabitListPresenter(Context context, HabitsRepository repository, ForegroundService.ForeControlBinder binder, HabitListContract.View view) {
         mRepository = repository;
@@ -121,17 +123,16 @@ public class HabitListPresenter implements HabitListContract.Presenter {
     }
 
 
-
-
     @Override
     public void loadHabits(boolean forceUpdate) {
         //首次加载时,强制网络加载
-        if (!FIRST_LOAD_ON_NETWORK){
-            mFirstLoad=false;
+        if (!FIRST_LOAD_ON_NETWORK) {
+            mFirstLoad = false;
         }
         loadHabits(forceUpdate || mFirstLoad, true);
         mFirstLoad = false;
     }
+
 
     private void loadHabits(boolean forceUpdate, final boolean showLoadingUI) {
         if (showLoadingUI) {
@@ -146,8 +147,10 @@ public class HabitListPresenter implements HabitListContract.Presenter {
         mRepository.getHabits(new HabitsDataSource.LoadHabitsCallback() {
             @Override
             public void onHabitsLoaded(List<Habit> habits) {
-                List<Habit> tasksToShow = new ArrayList<>();
+                //先清空很重要,经常忘记,导致列表自增长.
+                //List<Habit> tasksToShow = new ArrayList<Habit>();//源码这里不只是初始化,且定义为局部变量.更佳.
 
+                List<Habit> mHabitToShow = new ArrayList<>();
                 //这个回调可能被调用两次,一次是cache,一次是从服务器中取出数据.
                 //所以,在decrement执行前检查,否则会抛出异常
                 //如果计数器不为0
@@ -158,7 +161,7 @@ public class HabitListPresenter implements HabitListContract.Presenter {
                 //用requestType过滤tasks
                 for (Habit habit :
                         habits) {
-                    tasksToShow.add(habit);
+                    mHabitToShow.add(habit);
                 }
                 //当前view可能无法处理UI更新
                 if (!mView.isActive()) {
@@ -168,9 +171,9 @@ public class HabitListPresenter implements HabitListContract.Presenter {
                     mView.setLoadingIndicator(false);
                 }
 
-                processHabits(tasksToShow);
+                processHabits(mHabitToShow);
                 //todo 源码这里单独使用了processTasks方法,
-                mView.showHabits(tasksToShow);
+                mView.showHabits(mHabitToShow);
             }
 
             @Override
@@ -262,15 +265,46 @@ public class HabitListPresenter implements HabitListContract.Presenter {
     }
 
     @Override
+    public void updateActiveHabitState() {
+        Map<String, Integer> activeHabitList = mBinder.getActiveHabitList();
+        for (Map.Entry<String, Integer> entry : activeHabitList.entrySet()) {
+            mView.refreshHabitItem(entry.getKey(), entry.getValue());
+        }
+    }
+
+    @Override
     public void start() {
         loadHabits(false);
     }
+
+//    @Override
+//    public void updateActiveHabitState() {
+//        List<Habit> activeHabits = mBinder.getActiveHabitList();
+//        if (activeHabits != null && activeHabits.size() > 0) {
+//            for (Habit habitNew :
+//                    activeHabits) {
+//                LogUtils.i(TAG, habitNew.toString());
+//
+//                //方法一
+//                for (Habit habitOld :
+//                        mHabitToShow) {
+//                    if (habitOld.getId().equals(habitNew.getId())) {
+//                        mHabitToShow.set(mHabitToShow.indexOf(habitOld), habitNew);
+//                        LogUtils.i(TAG, habitOld.toString());
+//                    }
+//                }
+//            }
+//            mView.updateHabits(mHabitToShow);
+//        }
+//    }
 
     /**
      * 注销监听器,因为该方法不在契约类中,且fragment声明的是Presenter.所以无法调用.
      * 可以查看Xpressmusic源码有无必要析构,再决定是否调用
      */
-    public void onDestory(){
-        mBinder.unregisterOnControlListener(mListener);
+    public void onDestory() {
+        if (mBinder != null) {
+            mBinder.unregisterOnControlListener(mListener);
+        }
     }
 }

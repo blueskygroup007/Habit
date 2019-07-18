@@ -22,6 +22,8 @@ import com.bluesky.habit.service.ForegroundService;
 import com.bluesky.habit.util.LogUtils;
 
 import static com.bluesky.habit.service.ForegroundService.ACTION_ACCEPT;
+import static com.bluesky.habit.service.ForegroundService.ACTION_STOP;
+import static com.bluesky.habit.service.ForegroundService.EXTRA_HABIT;
 
 public class AlertDialogActivity extends Activity {
     public static final String TAG = AlertDialogActivity.class.getSimpleName();
@@ -75,6 +77,13 @@ public class AlertDialogActivity extends Activity {
             @Override
             public void run() {
                 LogUtils.e(TAG, "自动延时关闭AlertDialogActivity");
+                Intent intent = new Intent(AlertDialogActivity.this, ForegroundService.class);
+                intent.setAction(ACTION_STOP);
+                intent.putExtra(EXTRA_HABIT, habit);
+                //todo 需要修复问题:
+                //1.该页面需要传进来什么数据,需要传回去什么数据,确定下来.
+                //2.传ACTION_STOP回去后.应该有几套方案:1,stop 2,accept 3,ignore等
+                AlertDialogActivity.this.startService(intent);
                 finish();
             }
         }, 10000);

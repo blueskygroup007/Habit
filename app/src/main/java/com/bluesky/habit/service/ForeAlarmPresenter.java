@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.bluesky.habit.data.Alarm;
 import com.bluesky.habit.data.Habit;
+import com.bluesky.habit.data.source.HabitsDataSource;
 import com.bluesky.habit.data.source.HabitsRepository;
 import com.bluesky.habit.receiver.AlarmClockReceiver;
 import com.bluesky.habit.util.AlarmUtils;
@@ -19,12 +20,18 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class ForeAlarmPresenter implements ForeContract.ForePresenter {
+    /**
+     * 增长步长(秒)
+     */
+    private static final int TIME_UNIT = 1;
     private final HabitsRepository mRepository;
     private final Context mContext;
     private ScheduledExecutorService mMonitor = new ScheduledThreadPoolExecutor(5);
-    //这里维护一个活动Habit链表
-    private List<Habit> mList = new ArrayList<>();
-    private Map<String, ScheduledFuture> mMonitorMap = new HashMap();
+    //全部Habit列表,所有的列表从这取
+    private Map<String, Integer> mActiveList = new HashMap<>();
+    //活动Habit链表
+//    private List<Habit> mList = new ArrayList<>();
+    private Map<String, ScheduledFuture> mMonitorMap = new HashMap<>();
     private List<OnControlListener> mOnControlListeners = new ArrayList<>();
 
     public ForeAlarmPresenter(Context context, HabitsRepository repository) {
@@ -34,29 +41,19 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
 
     /**
      * 添加或修改一个Habit.根据ID
-     *
-     * @param habit
      */
-    private void addActiveHabit(Habit habit) {
-        mList.add(habit);
-
+    private void addActiveHabit(String id, int currentSec) {
+        mActiveList.put(id, currentSec);
     }
 
-    private void deleteActiveHabit(Habit habit) {
-        mList.remove(habit);
-
+    private void deleteActiveHabit(String id) {
+        mActiveList.remove(id);
     }
+
 
     @Override
-    public void setActiveHabitList(List<Habit> list) {
-        mList.clear();
-        mList.addAll(list);
-    }
-
-    @Override
-    public List<Habit> getActiveHabitList() {
-        return mList;
-
+    public Map<String, Integer> getActiveHabitList() {
+        return mActiveList;
     }
 
     @Override
@@ -72,10 +69,10 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
     }
 
     @Override
-    public void activeHabit(Habit habit) {
-        mList.add(habit);
-        startAlarm(habit.getAlarm());
-        mMonitorMap.put(habit.getId(), startMonitor(habit));
+    public void activeHabit(String id, int currentSec) {
+        mActiveList.put(id, currentSec);
+        startAlarm(mRepository.getTaskWithId(id).getAlarm());
+        mMonitorMap.put(id, startMonitor(id, currentSec));
         for (OnControlListener listener : mOnControlListeners
         ) {
             listener.onHabitStarted();
@@ -83,23 +80,33 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
     }
 
     @Override
-    public void disableHabit(Habit habit) {
-        if (mList.contains(habit)) {
-            mMonitorMap.remove(stopMonitor(habit));
-            stopAlarm(habit.getAlarm());
-            mList.remove(habit);
-            for (OnControlListener listener : mOnControlListeners
-            ) {
-                listener.onHabitStopped();
+    public void disableHabit(String id) {
+        if (mMonitorMap.containsKey(id)) {
+            if (stopMonitor(id)) {
+                mMonitorMap.remove(id);
+                stopAlarm(mRepository.getTaskWithId(id).getAlarm());
+                mActiveList.remove(id);
+                for (OnControlListener listener : mOnControlListeners
+                ) {
+                    listener.onHabitStopped();
+                }
             }
         }
     }
 
+    /**
+     * 不知道如何记录暂停了的habit.以及它的进度,所以该功能暂不使用
+     *
+     * @param id
+     * @param currentSec
+     */
     @Override
-    public void pauseabit(Habit habit) {
-        if (mList.contains(habit)) {
+    public void pauseabit(String id, int currentSec) {
+        if (mMonitorMap.containsKey(id)) {
             //todo 这里应该是暂停alarm,记录进度,暂停monitor,不remove,等startHabit时,再恢复
             //todo 方法1:再创建一个pauseHabit的Map集合.
+
+            //todo 方法0:记录当前进度
             for (OnControlListener listener : mOnControlListeners
             ) {
                 listener.onHabitPaused();
@@ -110,20 +117,20 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
     /**
      * 启动一个监听线程
      *
-     * @param habit
      * @return 返回一个可结束该监听线程的句柄
      */
-    private ScheduledFuture startMonitor(Habit habit) {
+    private ScheduledFuture startMonitor(String id, int currentSec) {
         return mMonitor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                habit.getAlarm().setAlarmCurrent(habit.getAlarm().getAlarmCurrent() + 1 * 1000);
-                LogUtils.i("Thread-run", "Monitor Thread ...." + habit.getTitle() + "current=" + habit.getAlarm().getAlarmCurrent());
-
-                for (OnControlListener listener : mOnControlListeners
-                ) {
-
-                    listener.onHabitProcessed(habit);
+                if (mActiveList != null) {
+                    int process = mActiveList.get(id);
+                    mActiveList.put(id, process + TIME_UNIT);
+                    LogUtils.i("Thread-run", "Monitor Thread ...." + (process + TIME_UNIT));
+                    for (OnControlListener listener : mOnControlListeners
+                    ) {
+                        listener.onHabitProcessed(id, process + TIME_UNIT);
+                    }
                 }
             }
         }, 1, 1, TimeUnit.SECONDS);
@@ -133,17 +140,17 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
 
     /**
      * 关闭监听线程
-     * @param habit
+     *
      * @return
      */
-    private String stopMonitor(Habit habit) {
-        ScheduledFuture future = mMonitorMap.get(habit.getId());
+    private boolean stopMonitor(String id) {
+        ScheduledFuture future = mMonitorMap.get(id);
         if (null != future) {
             future.cancel(true);
-            LogUtils.i("Thread-stop", habit.getTitle() + "---------------");
-            return habit.getId();
+            LogUtils.i("Thread-stop", mRepository.getTaskWithId(id).getTitle() + "---------------");
+            return true;
         }
-        return "";
+        return false;
     }
 
     public void startAlarm(Alarm alarm) {
@@ -185,6 +192,14 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
     }
 
     @Override
+    public void loadHabits(boolean forceUpdate, HabitsDataSource.LoadHabitsCallback loadHabitsCallback) {
+        if (forceUpdate) {
+            mRepository.refreshHabits();
+        }
+        mRepository.getHabits(loadHabitsCallback);
+    }
+
+    @Override
     public void start() {
 
     }
@@ -198,7 +213,7 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
      * 所有需要通知监听者的动作接口
      */
     public interface OnControlListener {
-        void onHabitProcessed(Habit habit);
+        void onHabitProcessed(String id, int currentSec);
 
         void onHabitStarted();
 

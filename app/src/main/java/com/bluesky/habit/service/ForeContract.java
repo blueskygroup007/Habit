@@ -4,17 +4,25 @@ import com.bluesky.habit.base.BasePresenter;
 import com.bluesky.habit.base.BaseView;
 import com.bluesky.habit.data.Alarm;
 import com.bluesky.habit.data.Habit;
+import com.bluesky.habit.data.source.HabitsDataSource;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ForeContract {
 
     interface ForePresenter extends BasePresenter {
-        //        public void addActiveHabit(Habit habit);
-//        public void deleteActiveHabit(Habit habit);
-        void setActiveHabitList(List<Habit> list);
+        /**
+         * 给后台service一个激活了的habit列表,暂时不需要,可以通过activeHabit逐个激活
+         *
+         */
+//        void setActiveHabitList(List<String,Integer> list);
 
-        List<Habit> getActiveHabitList();
+        /**
+         * 得到激活列表
+         * @return
+         */
+        Map<String, Integer> getActiveHabitList();
 
         void registerOnControlListener(ForeAlarmPresenter.OnControlListener listener);
 
@@ -23,18 +31,16 @@ public interface ForeContract {
         /**
          * 激活一个habit
          *
-         * @param habit
          */
-        void activeHabit(Habit habit);
+        void activeHabit(String id,int currentSec);
 
         /**
          * 取消一个habit
          *
-         * @param habit
          */
-        void disableHabit(Habit habit);
+        void disableHabit(String id);
 
-        void pauseabit(Habit habit);
+        void pauseabit(String id,int currentSec);
 
 //        /**
 //         * 启动闹钟
@@ -74,6 +80,7 @@ public interface ForeContract {
         void stopAccService();
 
 
+        void loadHabits(boolean forceUpdate, HabitsDataSource.LoadHabitsCallback loadHabitsCallback);
     }
 
 //    interface ForeService extends BaseView<ForePresenter>{}

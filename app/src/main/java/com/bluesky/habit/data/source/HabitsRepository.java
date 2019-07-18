@@ -191,7 +191,7 @@ public class HabitsRepository implements HabitsDataSource {
         });
     }
 
-    private Habit getTaskWithId(String taskId) {
+    public Habit getTaskWithId(String taskId) {
         checkNotNull(taskId);
         if (mCachedTasks == null || mCachedTasks.isEmpty()) {
             return null;

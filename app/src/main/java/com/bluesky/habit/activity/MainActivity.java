@@ -48,8 +48,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     protected void onDestroy() {
         LogUtils.i(TAG, "Activity onDestroy()...");
         super.onDestroy();
-        //不释放,会报错
-        unbindService(mConn);
     }
 
     ServiceConnection mConn = new ServiceConnection() {
@@ -59,26 +57,18 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
             mBinder = (ForegroundService.ForeControlBinder) service;
             //todo activity恢复,从service获取即时状态
-            updateCurrentHabitList(mBinder.getActiveHabitList());
             initFragment();
 
 //            mPresenter.setService();
         }
 
+        //绑定失败
         @Override
         public void onServiceDisconnected(ComponentName name) {
             LogUtils.e(TAG, "onServiceDisconnected()...");
         }
     };
 
-    /**
-     * 从service获取即时状态
-     *
-     * @param activeHabitList
-     */
-    private void updateCurrentHabitList(List<Habit> activeHabitList) {
-
-    }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -179,8 +169,11 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     @Override
     protected void onStop() {
         LogUtils.i(TAG, "Activity onStop()...");
-
         super.onStop();
+        //界面不可见,取消绑定服务,取消监听器
+        mPresenter.onDestory();//此方法释放了监听器
+        unbindService(mConn);
+
     }
 
     private void initFragment() {

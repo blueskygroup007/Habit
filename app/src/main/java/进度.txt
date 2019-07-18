@@ -28,8 +28,6 @@ Binder:
 		Intent intent = new Intent(MusicService.ACTION_PLAY);      //2.发指令
     }
 
-
-
     1.参考XpressMusic,在Activity的onServiceConnected()方法中.跟Service要数据和状态
     initCurrentPlayInfo(mMusicServiceBinder.getCurrentPlayInfo());
 
@@ -46,8 +44,14 @@ Binder:
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
+7月19日:
+*** 注意 *** 大修改
+1.ForegroundService不维护全部Habit列表.
+2.只使用Repository的一级缓存作为即时数据(Habit列表).
+3.增删都要通过Service操作,以保证同时增删它维护的活动habit列表
+-------------------------------------------------------------------------------
 //TODO BUG4:
-    //**1.**  计时进行中最小化,再切回来,确实跟service取数据了.但是replaceData时,引起了checkBox的监听回调.于是Habit被结束了.
+    还是这里有问题://**1.**  计时进行中最小化,再切回来,确实跟service取数据了.但是replaceData时,引起了checkBox的监听回调.于是Habit被结束了.
     //**2.**  fragment的onResume中,执行了Presenter的start(),我以为:start()改在onCreate()中.onResume()中放取数据即时状态
 ------------------------------------------------------------------------------
 //TODO bug3:

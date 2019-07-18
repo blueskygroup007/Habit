@@ -14,11 +14,13 @@ import com.bluesky.habit.R;
 import com.bluesky.habit.activity.MainActivity;
 import com.bluesky.habit.data.Alarm;
 import com.bluesky.habit.data.Habit;
+import com.bluesky.habit.data.source.HabitsDataSource;
 import com.bluesky.habit.util.Injection;
 import com.bluesky.habit.util.LogUtils;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author BlueSky
@@ -66,11 +68,11 @@ public class ForegroundService extends Service {
          * todo 放置 "允许bind到service"的客户的主动方法.--------------------------------------
          */
 
-        public void setActiveHabitList(List<Habit> list) {
-            mPresenter.setActiveHabitList(list);
-        }
+//        public void setActiveHabitList(List<String> list) {
+//            mPresenter.setActiveHabitList(list);
+//        }
 
-        public List<Habit> getActiveHabitList() {
+        public Map<String, Integer> getActiveHabitList() {
             return mPresenter.getActiveHabitList();
         }
 
@@ -104,6 +106,9 @@ public class ForegroundService extends Service {
             mPresenter.startAlarm(habit.getAlarm());
         }
 
+        public void loadHabits(boolean forceUpdate, HabitsDataSource.LoadHabitsCallback loadHabitsCallback) {
+            mPresenter.loadHabits(forceUpdate,loadHabitsCallback);
+        }
     }
 
     private ForeControlBinder mBinder = new ForeControlBinder();
@@ -146,18 +151,20 @@ public class ForegroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getAction();
         Habit habit = intent.getParcelableExtra(EXTRA_HABIT);
+        String id=habit.getId();
         Alarm alarm = habit.getAlarm();
         switch (action) {
             case ACTION_PLAY:
                 LogUtils.d(TAG, "使用Action方式启动一个Habit...");
-                mPresenter.activeHabit(habit);
+                mPresenter.activeHabit(id,0);
                 break;
             case ACTION_PAUSE:
                 mPresenter.pauseAlarm(alarm);
                 break;
             case ACTION_STOP:
                 LogUtils.d(TAG, "使用Action方式cancel一个Habit...");
-                mPresenter.disableHabit(habit);
+                //这里直接写id即可,因为只用到id
+                mPresenter.disableHabit(id);
                 break;
             case ACTION_ACCEPT:
                 mPresenter.onAlarmAccept(alarm);

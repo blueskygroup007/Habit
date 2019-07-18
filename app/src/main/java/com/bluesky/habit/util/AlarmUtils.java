@@ -41,7 +41,7 @@ public class AlarmUtils {
         intent.putExtra("alarm", alarm);
         //使用hashCode作为请求码,以区分alarm
         PendingIntent pi = PendingIntent.getBroadcast(context, alarm.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        long interval = alarm.getAlarmInterval();
+        long interval = alarm.getAlarmInterval() * 1000;
         /**
          *
          * SystemClock.elapsedRealtime()  系统消逝的时间

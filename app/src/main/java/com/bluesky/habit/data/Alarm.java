@@ -7,8 +7,6 @@ import androidx.annotation.Nullable;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 
-import java.util.Objects;
-
 /**
  * @author BlueSky
  * @date 2019/4/20
@@ -27,17 +25,17 @@ public class Alarm implements Parcelable, Cloneable {
 
     private int numberCurrent = 0;
     /**
-     * 闹钟间隔
+     * 闹钟间隔(秒)
      */
 
-    private int alarmInterval = 10 * 1000;
+    private int alarmInterval = 300;
     /**
-     * 当前闹钟进行时间
+     * 当前闹钟进行时间(秒)//todo 已经被停用
      */
 
     private int alarmCurrent = 0;
     /**
-     * 闹钟总时长(统计用)
+     * 闹钟总时长(统计用)(秒)
      */
 
     private int alarmTotal = 0;
@@ -101,9 +99,15 @@ public class Alarm implements Parcelable, Cloneable {
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (!(obj instanceof Alarm)) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Alarm)) {
+            return false;
+        }
 
         Alarm other = (Alarm) obj;
         if (!(numberCount == other.getNumberCount())) {

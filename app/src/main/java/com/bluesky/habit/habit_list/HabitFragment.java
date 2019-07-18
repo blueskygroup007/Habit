@@ -116,7 +116,8 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
             }
         }
 
-
+        //P的启动入口
+        mPresenter.start();
     }
 
     @Override
@@ -130,10 +131,9 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
         LogUtils.i(TAG, "Fragment onResume()...");
 
         super.onResume();
-        //P的启动入口
-        mPresenter.start();
+
         //更新列表即时状态
-        mAdapter.replaceData(mBinder.getActiveHabitList());
+        mPresenter.updateActiveHabitState();
     }
 
     @Override
@@ -354,10 +354,14 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
     }
 
     @Override
-    public void refreshHabitItem(Habit habit) {
-        //todo 两种实现方法:
-//        mAdapter.updateView(int,ListView);
-        updateItem(mListView, habit);
+    public void refreshHabitItem(String id, int currentSec) {
+        updateItem(mListView, id, currentSec);
+
+    }
+
+    @Override
+    public void updateHabits(List<Habit> habits) {
+        mAdapter.replaceData(habits);
     }
 
 
@@ -365,15 +369,14 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
      * 单独更新某个listview的item显示,并更新数据源
      *
      * @param listView
-     * @param habit
      */
-    private void updateItem(ListView listView, Habit habit) {
+    private void updateItem(ListView listView, String id, int currentSec) {
         if (listView != null) {
             int first = listView.getFirstVisiblePosition();
             int end = listView.getLastVisiblePosition();
             int position = 0;
             for (int i = first; i <= end; i++) {
-                if (habit.getId().equals(((Habit) listView.getItemAtPosition(i)).getId())) {
+                if (id.equals(((Habit) listView.getItemAtPosition(i)).getId())) {
                     position = i;
                     break;
                 }
@@ -381,12 +384,13 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
             if (position >= first && position <= end) {
                 View view = listView.getChildAt(position - first);
                 HabitAdapter.ViewHolder holder = (HabitAdapter.ViewHolder) view.getTag();
-                long ms = habit.getAlarm().getAlarmCurrent();
-                String currentTime = TimeUtils.secToTime(new Long(ms / 1000).intValue());
+                String currentTime = TimeUtils.secToTime(currentSec);
+                int interval = ((Habit) listView.getItemAtPosition(position)).getAlarm().getAlarmInterval();
                 holder.pb_time.post(new Runnable() {
                     @Override
                     public void run() {
-                        holder.pb_time.setPercentage(habit.getAlarm().getAlarmCurrent() * 360 / habit.getAlarm().getAlarmInterval());
+                        //todo 防止currentSec为0
+                        holder.pb_time.setPercentage(currentSec * 360 / interval);
                         holder.pb_time.setStepCountText(currentTime);
                     }
                 });
@@ -427,16 +431,11 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
     private class HabitAdapter extends BaseAdapter {
 
         private List<Habit> mHabits;
-        private Map<String, Habit> mHabitMap = new ArrayMap<>();
         private ItemListener mItemListener;
         private SwitchButton.OnCheckedChangeListener mSwitchButtonOnChangeListener;
 
         public HabitAdapter(List<Habit> habits, ItemListener itemListener) {
             mHabits = habits;
-            for (Habit habit : habits
-            ) {
-                mHabitMap.put(habit.getId(), habit);
-            }
             mItemListener = itemListener;
         }
 
@@ -448,7 +447,6 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
         public void replaceData(List<Habit> habits) {
             setList(habits);
             LogUtils.i(TAG, "habit列表个数是:......" + habits.size());
-
             notifyDataSetChanged();
         }
 
@@ -512,9 +510,12 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
                 public void onCheckedChanged(SwitchButton view, boolean isChecked) {
 //                    //判断是不是点击触发的，当setChecked()时则不会触发此listener
 //                    //但是,因为SwitchButton是第三方控件,可能是因为继承于view,而没有实现ClickAble,所以isPressed不能返回true.
+                    //上面说的不对.因为ClickAble就是View的方法.原因不详,暂时无效
 //                    if (!view.isPressed()) {
+//                        LogUtils.i("SwitchButton is not Pressed...");
 //                        return;
 //                    }
+                    LogUtils.i("SwitchButton is Pressed...");
                     if (isChecked) {
                         mItemListener.onActivateTaskClick(habit);
                     } else {
@@ -526,19 +527,22 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
             holder.pb_time.setDefText("当前:");
             long ms = habit.getAlarm().getAlarmCurrent();
-            String currentTime = TimeUtils.secToTime(new Long(ms / 1000).intValue());
+            String currentTime = TimeUtils.secToTime(Long.valueOf(ms).intValue());
             holder.pb_time.setStepCountText(currentTime);
-            holder.pb_time.setPercentage(habit.getAlarm().getAlarmCurrent() * 360 / habit.getAlarm().getAlarmInterval());
+            holder.pb_time.setPercentage(0);
+
             //先取消监听
             holder.switch_completed.setOnCheckedChangeListener(null);
             holder.switch_completed.setChecked(habit.isActive());
             //设置状态后再开启监听
             holder.switch_completed.setOnCheckedChangeListener(mSwitchButtonOnChangeListener);
+
             holder.iv_icon.setImageResource(AppConstant.HABIT_ICONS[habit.getIcon()]);
             holder.tv_title.setText(habit.getTitle());
             holder.tv_description.setText(habit.getDescription());
             holder.pb_number.setMax(habit.getAlarm().getNumberCount());
             holder.pb_number.setProgress(habit.getAlarm().getNumberCurrent());
+
             //修改item的背景变化
             convertView.setSelected(habit.isActive());
             convertView.setOnClickListener(new View.OnClickListener() {
