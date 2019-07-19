@@ -24,6 +24,10 @@ import androidx.room.PrimaryKey;
 public class Habit implements Parcelable, Cloneable {
     @Ignore
     private static final int DEFAULT_ICON = AppConstant.DEFAULT_ICON;
+    @Ignore
+    public static final String HABIT_ID = "habit_id";
+    @Ignore
+    public static final String HABIT_INTERVAL = "habit_interval";
     //todo 主键必须有NonNull注解
     //todo 用final修饰成员变量,表示只允许在构造时给变量赋值,所以没有setXXX()方法
     @PrimaryKey
@@ -111,16 +115,16 @@ public class Habit implements Parcelable, Cloneable {
             return false;
         }
         Habit other = (Habit) obj;
-        if (!(mId .equals(other.getId()))) {
+        if (!(mId.equals(other.getId()))) {
             return false;
         }
         if (!(mIcon == other.getIcon())) {
             return false;
         }
-        if (!(mTitle .equals(other.getTitle()))) {
+        if (!(mTitle.equals(other.getTitle()))) {
             return false;
         }
-        if (!(mDescription .equals(other.getDescription()) )) {
+        if (!(mDescription.equals(other.getDescription()))) {
             return false;
         }
         if (!(mActive == other.isActive())) {

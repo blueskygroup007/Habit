@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.bluesky.habit.constant.AppConstant.FIRST_LOAD_ON_NETWORK;
+import static com.bluesky.habit.data.Habit.HABIT_ID;
+import static com.bluesky.habit.data.Habit.HABIT_INTERVAL;
 import static com.bluesky.habit.service.ForegroundService.ACTION_PLAY;
 import static com.bluesky.habit.service.ForegroundService.ACTION_STOP;
 import static com.bluesky.habit.service.ForegroundService.EXTRA_HABIT;
@@ -73,6 +75,11 @@ public class HabitListPresenter implements HabitListContract.Presenter {
         public void onHabitTimeUp() {
 
         }
+
+        @Override
+        public void onHabitsChanged() {
+            loadHabits(false, true);
+        }
     };
 
 
@@ -99,16 +106,11 @@ public class HabitListPresenter implements HabitListContract.Presenter {
 
     @Override
     public void startHabitAlarm(Habit habit) {
-        //Binder方式启动Alarm
-//        LogUtils.d(TAG, "启动一个Habit...");
-//        if (mBinder != null) {
-//            mBinder.doStartHabit(habit);
-//        }
-
         //Action方式启动Alarm
         Intent intent = new Intent(mContext, ForegroundService.class);
         intent.setAction(ACTION_PLAY);
-        intent.putExtra(EXTRA_HABIT, habit);
+        intent.putExtra(HABIT_ID, habit.getId());
+        intent.putExtra(HABIT_INTERVAL, habit.getAlarm().getAlarmInterval());
         mContext.startService(intent);
 
     }
@@ -117,8 +119,8 @@ public class HabitListPresenter implements HabitListContract.Presenter {
     public void cancelHabitAlarm(Habit habit) {
         Intent intent = new Intent(mContext, ForegroundService.class);
         intent.setAction(ACTION_STOP);
-        intent.putExtra(EXTRA_HABIT, habit);
-
+        intent.putExtra(HABIT_ID, habit.getId());
+        intent.putExtra(HABIT_INTERVAL, habit.getAlarm().getAlarmInterval());
         mContext.startService(intent);
     }
 

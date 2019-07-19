@@ -46,7 +46,7 @@ public class HabitsRemoteDataSource implements HabitsDataSource {
     }
 
     private static void addHabit(int icon, String title, String description) {
-        Alarm alarm = new Alarm(100, 20, 180 ,  icon * 30, 30, 1, 1,1, "", true, false, 128, 0);
+        Alarm alarm = new Alarm(100, 20, 30 ,  icon , 30, 1, 1,1, "", true, false, 128, 0);
         Habit newHabit = new Habit(icon, title, description, false, alarm);
         HABITS_SERVICE_DATA.put(newHabit.getId(), newHabit);
     }

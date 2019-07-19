@@ -9,6 +9,8 @@ import android.util.Log;
 
 import com.bluesky.habit.data.Alarm;
 
+import static com.bluesky.habit.data.Habit.HABIT_ID;
+
 
 /**
  * @author BlueSky
@@ -32,16 +34,16 @@ public class AlarmUtils {
      *
      * @param context
      * @param clsReceiver
-     * @param alarm
      */
-    public static void setAlarm(Context context, Class<?> clsReceiver, Alarm alarm) {
+    public static void setAlarm(Context context, Class<?> clsReceiver, String id, int alertSec) {
+        LogUtils.e(TAG,"startAlarm()...");
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, clsReceiver);
         intent.setAction(ALARM_ACTION);
-        intent.putExtra("alarm", alarm);
+        intent.putExtra(HABIT_ID, id);
         //使用hashCode作为请求码,以区分alarm
-        PendingIntent pi = PendingIntent.getBroadcast(context, alarm.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        long interval = alarm.getAlarmInterval() * 1000;
+        PendingIntent pi = PendingIntent.getBroadcast(context, id.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        long interval = alertSec * 1000;
         /**
          *
          * SystemClock.elapsedRealtime()  系统消逝的时间
@@ -59,6 +61,31 @@ public class AlarmUtils {
             am.set(ALARM_TYPE_DEFAULT, System.currentTimeMillis() + interval, pi);
         }
     }
+//    public static void setAlarm(Context context, Class<?> clsReceiver, Alarm alarm) {
+//        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+//        Intent intent = new Intent(context, clsReceiver);
+//        intent.setAction(ALARM_ACTION);
+//        intent.putExtra("alarm", alarm);
+//        //使用hashCode作为请求码,以区分alarm
+//        PendingIntent pi = PendingIntent.getBroadcast(context, alarm.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        long interval = alarm.getAlarmInterval() * 1000;
+//        /**
+//         *
+//         * SystemClock.elapsedRealtime()  系统消逝的时间
+//         * SystemClock.currentThreadTimeMillis() 系统当前线程启动毫秒数
+//         */
+//        Log.d(TAG, "Build.VERSION.SDK_INT=" + Build.VERSION.SDK_INT);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            Log.e(TAG, "setExactAndAllowWhileIdle方法");
+//            am.setExactAndAllowWhileIdle(ALARM_TYPE_DEFAULT, System.currentTimeMillis() + interval, pi);
+//        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            Log.e(TAG, "setExact方法");
+//            am.setExact(ALARM_TYPE_DEFAULT, System.currentTimeMillis() + interval, pi);
+//        } else {
+//            Log.e(TAG, "set方法");
+//            am.set(ALARM_TYPE_DEFAULT, System.currentTimeMillis() + interval, pi);
+//        }
+//    }
 
     /**
      * 取消 alarm 使用 AlarmManager.cancel() 函数，传入参数是个 PendingIntent 实例。
@@ -68,11 +95,21 @@ public class AlarmUtils {
      * @param context
      * @param clsReceiver
      */
-    public static void cancelAlarm(Context context, Class<?> clsReceiver, Alarm alarm) {
+    public static void cancelAlarm(Context context, Class<?> clsReceiver, String id) {
+        LogUtils.e(TAG,"cancelAlarm()...");
+
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, clsReceiver);
         intent.setAction(ALARM_ACTION);
-        PendingIntent pi = PendingIntent.getBroadcast(context, alarm.hashCode(), intent, 0);
+        intent.putExtra(HABIT_ID, id);
+        PendingIntent pi = PendingIntent.getBroadcast(context, id.hashCode(), intent, 0);
         am.cancel(pi);
     }
+//    public static void cancelAlarm(Context context, Class<?> clsReceiver, Alarm alarm) {
+//        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+//        Intent intent = new Intent(context, clsReceiver);
+//        intent.setAction(ALARM_ACTION);
+//        PendingIntent pi = PendingIntent.getBroadcast(context, alarm.hashCode(), intent, 0);
+//        am.cancel(pi);
+//    }
 }

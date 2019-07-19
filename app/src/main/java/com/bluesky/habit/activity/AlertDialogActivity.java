@@ -10,7 +10,6 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -21,9 +20,9 @@ import com.bluesky.habit.R;
 import com.bluesky.habit.service.ForegroundService;
 import com.bluesky.habit.util.LogUtils;
 
+import static com.bluesky.habit.data.Habit.HABIT_ID;
 import static com.bluesky.habit.service.ForegroundService.ACTION_ACCEPT;
 import static com.bluesky.habit.service.ForegroundService.ACTION_STOP;
-import static com.bluesky.habit.service.ForegroundService.EXTRA_HABIT;
 
 public class AlertDialogActivity extends Activity {
     public static final String TAG = AlertDialogActivity.class.getSimpleName();
@@ -34,6 +33,7 @@ public class AlertDialogActivity extends Activity {
     private SensorManager sensorManager;
     private Sensor mSensor;
     private Handler mHandler;
+    private String mId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +52,19 @@ public class AlertDialogActivity extends Activity {
         });
 
         setVibrator(true);
+        Intent intent = getIntent();
+        //这里能取到正确的值
+        mId = intent.getStringExtra(HABIT_ID);
+        LogUtils.i(TAG, "onCreate------------>id=" + mId);
 
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        mId = intent.getStringExtra(HABIT_ID);
+        LogUtils.i(TAG, "onNewIntent------------>id=" + mId);
+        setIntent(intent);
     }
 
     public void startAccSensor() {
@@ -79,7 +91,15 @@ public class AlertDialogActivity extends Activity {
                 LogUtils.e(TAG, "自动延时关闭AlertDialogActivity");
                 Intent intent = new Intent(AlertDialogActivity.this, ForegroundService.class);
                 intent.setAction(ACTION_STOP);
-                intent.putExtra(EXTRA_HABIT, habit);
+                if (mId == null || mId.isEmpty()) {
+                    try {
+                        throw new Exception("没能获取id....");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println("捕获异常(没能获取id....)");
+                    }
+                }
+                intent.putExtra(HABIT_ID, mId);
                 //todo 需要修复问题:
                 //1.该页面需要传进来什么数据,需要传回去什么数据,确定下来.
                 //2.传ACTION_STOP回去后.应该有几套方案:1,stop 2,accept 3,ignore等

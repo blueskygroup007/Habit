@@ -22,6 +22,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import static com.bluesky.habit.data.Habit.HABIT_ID;
+import static com.bluesky.habit.data.Habit.HABIT_INTERVAL;
+
 /**
  * @author BlueSky
  * @date 2019/5/20
@@ -71,7 +74,6 @@ public class ForegroundService extends Service {
 //        public void setActiveHabitList(List<String> list) {
 //            mPresenter.setActiveHabitList(list);
 //        }
-
         public Map<String, Integer> getActiveHabitList() {
             return mPresenter.getActiveHabitList();
         }
@@ -96,18 +98,22 @@ public class ForegroundService extends Service {
 
         }
 
-        /**
-         * 启动Habit
-         *
-         * @param habit
-         */
-        public void doStartHabit(Habit habit) {
-            LogUtils.d(TAG, "使用Binder方式启动一个Habit...");
-            mPresenter.startAlarm(habit.getAlarm());
+        public void loadHabits(boolean forceUpdate, HabitsDataSource.LoadHabitsCallback loadHabitsCallback) {
+            mPresenter.loadHabits(forceUpdate, loadHabitsCallback);
         }
 
-        public void loadHabits(boolean forceUpdate, HabitsDataSource.LoadHabitsCallback loadHabitsCallback) {
-            mPresenter.loadHabits(forceUpdate,loadHabitsCallback);
+        /**
+         * 增加一个habit
+         */
+        public void addOrUpdateHabit(Habit habit) {
+            mPresenter.addOrUpdateHabit(habit);
+        }
+
+        /**
+         * 删除一个habit
+         */
+        public void deleteHabit(String id) {
+            mPresenter.deleteHabit(id);
         }
     }
 
@@ -150,30 +156,26 @@ public class ForegroundService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getAction();
-        Habit habit = intent.getParcelableExtra(EXTRA_HABIT);
-        String id=habit.getId();
-        Alarm alarm = habit.getAlarm();
         switch (action) {
             case ACTION_PLAY:
-                LogUtils.d(TAG, "使用Action方式启动一个Habit...");
-                mPresenter.activeHabit(id,0);
+                LogUtils.d(TAG, "启动一个Habit...");
+                mPresenter.activeHabit(intent.getStringExtra(HABIT_ID), 0, intent.getIntExtra(HABIT_INTERVAL, 300));
                 break;
             case ACTION_PAUSE:
-                mPresenter.pauseAlarm(alarm);
+//                mPresenter.pauseAlarm(alarm);
                 break;
             case ACTION_STOP:
-                LogUtils.d(TAG, "使用Action方式cancel一个Habit...");
-                //这里直接写id即可,因为只用到id
-                mPresenter.disableHabit(id);
+                LogUtils.d(TAG, "Stop一个Habit...");
+                mPresenter.disableHabit(intent.getStringExtra(HABIT_ID));
                 break;
             case ACTION_ACCEPT:
-                mPresenter.onAlarmAccept(alarm);
+//                mPresenter.onAlarmAccept(alarm);
                 break;
             case ACTION_SKIP:
-                mPresenter.onAlarmSkip(alarm);
+//                mPresenter.onAlarmSkip(alarm);
                 break;
             case ACTION_TIMEUP:
-                mPresenter.onAlarmTimeIsUp(alarm);
+//                mPresenter.onAlarmTimeIsUp(alarm);
                 break;
             case ACTION_DISMISS:
                 doDissmiss();

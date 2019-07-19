@@ -41,6 +41,13 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
     private boolean isForeground = true;
     private Habit mHabit;
 
+    /**
+     * //todo 任务:
+     * 1.Service绑定相关:Binder和Connection
+     * 2.Presenter的相关方法改写为Binder.xxx()
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -196,7 +203,7 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
         result.setTitle(mBinding.etTitle.getText().toString());
         result.setDescription(mBinding.etContent.getText().toString());
         Alarm alarm = result.getAlarm();
-        alarm.setAlarmInterval(mBinding.seekBar.getProgress() * 1000 * 60);
+        alarm.setAlarmInterval(mBinding.seekBar.getProgress() * 60);
         int indexWake = mBinding.cbAlertRing.isChecked() ? AppConstant.WakeStyle.RING : 0;
         indexWake += mBinding.cbAlertLight.isChecked() ? AppConstant.WakeStyle.LIGHT : 0;
         indexWake += mBinding.cbAlertVibrate.isChecked() ? AppConstant.WakeStyle.VIBRATE : 0;

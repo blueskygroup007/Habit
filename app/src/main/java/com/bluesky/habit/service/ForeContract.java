@@ -20,6 +20,7 @@ public interface ForeContract {
 
         /**
          * 得到激活列表
+         *
          * @return
          */
         Map<String, Integer> getActiveHabitList();
@@ -30,17 +31,26 @@ public interface ForeContract {
 
         /**
          * 激活一个habit
-         *
          */
-        void activeHabit(String id,int currentSec);
+        void activeHabit(String id, int currentSec,int interval);
 
         /**
          * 取消一个habit
-         *
          */
         void disableHabit(String id);
 
-        void pauseabit(String id,int currentSec);
+        void pauseabit(String id, int currentSec);
+
+        /**
+         * 增加一个habit
+         */
+        void addOrUpdateHabit(Habit habit);
+
+        /**
+         * 删除一个habit
+         */
+        void deleteHabit(String id);
+
 
 //        /**
 //         * 启动闹钟

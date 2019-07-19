@@ -12,6 +12,7 @@ import com.bluesky.habit.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
@@ -69,9 +70,9 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
     }
 
     @Override
-    public void activeHabit(String id, int currentSec) {
+    public void activeHabit(String id, int currentSec, int interval) {
         mActiveList.put(id, currentSec);
-        startAlarm(mRepository.getTaskWithId(id).getAlarm());
+        startAlarm(id, interval - currentSec);
         mMonitorMap.put(id, startMonitor(id, currentSec));
         for (OnControlListener listener : mOnControlListeners
         ) {
@@ -82,9 +83,14 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
     @Override
     public void disableHabit(String id) {
         if (mMonitorMap.containsKey(id)) {
+            LogUtils.e("没有找到对应ID.....");
+        } else {
+            LogUtils.e("对应ID=" + id);
+        }
+        if (mMonitorMap.containsKey(id)) {
             if (stopMonitor(id)) {
                 mMonitorMap.remove(id);
-                stopAlarm(mRepository.getTaskWithId(id).getAlarm());
+                stopAlarm(id);
                 mActiveList.remove(id);
                 for (OnControlListener listener : mOnControlListeners
                 ) {
@@ -111,6 +117,24 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
             ) {
                 listener.onHabitPaused();
             }
+        }
+    }
+
+    @Override
+    public void addOrUpdateHabit(Habit habit) {
+        mRepository.saveHabit(habit);
+        for (OnControlListener listener :
+                mOnControlListeners) {
+            listener.onHabitsChanged();
+        }
+    }
+
+    @Override
+    public void deleteHabit(String id) {
+        mRepository.deleteHabit(id);
+        for (OnControlListener listener :
+                mOnControlListeners) {
+            listener.onHabitsChanged();
         }
     }
 
@@ -153,12 +177,12 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
         return false;
     }
 
-    public void startAlarm(Alarm alarm) {
-        AlarmUtils.setAlarm(mContext, AlarmClockReceiver.class, alarm);
+    public void startAlarm(String id, int alertSec) {
+        AlarmUtils.setAlarm(mContext, AlarmClockReceiver.class, id, alertSec);
     }
 
-    public void stopAlarm(Alarm alarm) {
-        AlarmUtils.cancelAlarm(mContext, AlarmClockReceiver.class, alarm);
+    public void stopAlarm(String id) {
+        AlarmUtils.cancelAlarm(mContext, AlarmClockReceiver.class, id);
     }
 
     public void pauseAlarm(Alarm alarm) {
@@ -226,6 +250,11 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
         void onHabitSkipped();
 
         void onHabitTimeUp();
+
+        /**
+         * 当repository的数据被"增删改"
+         */
+        void onHabitsChanged();
 
         /**
          * todo 这里写需要被动通知的方法

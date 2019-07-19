@@ -8,6 +8,8 @@ import android.util.Log;
 import com.bluesky.habit.activity.AlertDialogActivity;
 import com.bluesky.habit.util.LogUtils;
 
+import static com.bluesky.habit.data.Habit.HABIT_ID;
+
 
 public class AlarmClockReceiver extends BroadcastReceiver {
 
@@ -33,9 +35,12 @@ public class AlarmClockReceiver extends BroadcastReceiver {
         alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         alertDialog.show();*/
 
+        String id = intent.getStringExtra(HABIT_ID);
+
         Intent actIntent = new Intent();
         actIntent.setClass(context, AlertDialogActivity.class);
         actIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        actIntent.putExtra(HABIT_ID, id);
         context.startActivity(actIntent);
 
     }
