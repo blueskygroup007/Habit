@@ -137,6 +137,7 @@ public class AlertDialogActivity extends Activity {
 
                     //给前台服务发消息,告诉P,有反馈
                     Intent intent = new Intent(AlertDialogActivity.this, ForegroundService.class);
+                    intent.putExtra(HABIT_ID, mId);
                     intent.setAction(ACTION_ACCEPT);
                     startService(intent);
                     finish();

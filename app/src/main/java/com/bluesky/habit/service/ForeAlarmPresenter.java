@@ -138,6 +138,8 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
         }
     }
 
+
+
     /**
      * 启动一个监听线程
      *
@@ -189,26 +191,31 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
 
     }
 
-    public void onAlarmTimeIsUp(Alarm alarm) {
+
+    @Override
+    public void onAlarmTimeIsUp(String id) {
         for (OnControlListener listener : mOnControlListeners
         ) {
             listener.onHabitTimeUp();
         }
     }
 
-    public void onAlarmAccept(Alarm alarm) {
+    @Override
+    public void onAlarmAccept(String id) {
         for (OnControlListener listener : mOnControlListeners
         ) {
             listener.onHabitAccepted();
         }
     }
 
-    public void onAlarmSkip(Alarm alarm) {
+    @Override
+    public void onAlarmSkip(String id) {
         for (OnControlListener listener : mOnControlListeners
         ) {
             listener.onHabitSkipped();
         }
     }
+
 
     @Override
     public void stopAccService() {

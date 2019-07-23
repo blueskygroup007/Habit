@@ -45,7 +45,6 @@ import static com.bluesky.habit.data.Habit.HABIT_INTERVAL;
 public class ForegroundService extends Service {
     private static final String TAG = ForegroundService.class.getSimpleName();
     public static final int ID = 12346;
-    public static final String EXTRA_HABIT = "extra_habit";
     private ForeAlarmPresenter mPresenter;
 
 
@@ -169,13 +168,13 @@ public class ForegroundService extends Service {
                 mPresenter.disableHabit(intent.getStringExtra(HABIT_ID));
                 break;
             case ACTION_ACCEPT:
-//                mPresenter.onAlarmAccept(alarm);
+                mPresenter.onAlarmAccept(intent.getStringExtra(HABIT_ID));
                 break;
             case ACTION_SKIP:
-//                mPresenter.onAlarmSkip(alarm);
+                mPresenter.onAlarmSkip(intent.getStringExtra(HABIT_ID));
                 break;
             case ACTION_TIMEUP:
-//                mPresenter.onAlarmTimeIsUp(alarm);
+                mPresenter.onAlarmTimeIsUp(intent.getStringExtra(HABIT_ID));
                 break;
             case ACTION_DISMISS:
                 doDissmiss();

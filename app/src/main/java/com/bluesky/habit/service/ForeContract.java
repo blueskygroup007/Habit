@@ -32,7 +32,7 @@ public interface ForeContract {
         /**
          * 激活一个habit
          */
-        void activeHabit(String id, int currentSec,int interval);
+        void activeHabit(String id, int currentSec, int interval);
 
         /**
          * 取消一个habit
@@ -51,38 +51,24 @@ public interface ForeContract {
          */
         void deleteHabit(String id);
 
+        /**
+         * 习惯时间到
+         */
+        void onAlarmTimeIsUp(String id);
 
-//        /**
-//         * 启动闹钟
-//         *
-//         * @param alarm
-//         */
-//        void startAlarm(Alarm alarm);
-//
-//        /**
-//         * 停止闹钟
-//         *
-//         * @param alarm
-//         */
-//        void stopAlarm(Alarm alarm);
-//
-//        /**
-//         * 暂停闹钟
-//         *
-//         * @param alarm
-//         */
-//        void pauseAlarm(Alarm alarm);
-//
-//        /**
-//         * 闹钟计时到了
-//         *
-//         * @param alarm
-//         */
-//        void onAlarmTimeIsUp(Alarm alarm);
-//
-//        void onAlarmAccept(Alarm alarm);
-//
-//        void onAlarmSkip(Alarm alarm);
+        /**
+         * 确认习惯
+         *
+         * @param id
+         */
+        void onAlarmAccept(String id);
+
+        /**
+         * 跳过习惯
+         *
+         * @param id
+         */
+        void onAlarmSkip(String id);
 
         /**
          * 停止加速度监听服务

@@ -49,22 +49,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class HabitFragment extends Fragment implements HabitListContract.View {
 
     // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
     private static final String TAG = HabitFragment.class.getSimpleName();
     public static final String ARG_BINDER = "foregroundservice_binder";
     // TODO: Customize parameters
-    private int mColumnCount = 1;
     private ForegroundService.ForeControlBinder mBinder;
     private HabitListContract.Presenter mPresenter;
-    private OnListFragmentInteractionListener mListener;
-    private ScrollChildSwipeRefreshLayout mRecyclerView;
     private HabitAdapter mAdapter;
 
 
     // 没有任务的提示框---------
 
     private View mNoHabitsView;
-
 
     private ImageView mNoHabitIcon;
 
@@ -73,10 +68,7 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
     private TextView mNoHabitAddView;
 
     // ------------------
-
-
     private LinearLayout mHabitsView;
-
     private TextView mFilteringLabelView;
     private ListView mListView;
 
@@ -103,7 +95,6 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
         LogUtils.i(TAG, "Fragment onCreate()...");
 
         super.onCreate(savedInstanceState);
-
 
         //Todo 这里必须有一个初始化的0.否则adapter中就会报空指针(必须让getCount是0)
         //todo 经查,是adapter忘记写setTag()方法了
@@ -145,14 +136,6 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
         //初始化任务列表视图
         mListView = root.findViewById(R.id.lv_task_list);
         mListView.setAdapter(mAdapter);
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                if (position >= 0) {
-//                    mItemListener.onTaskClick(mAdapter.mHabits.get(position));
-//                }
-//            }
-//        });
         mFilteringLabelView = root.findViewById(R.id.tv_filtering_lable);
         mHabitsView = root.findViewById(R.id.ll_tasklist);
         //初始化no tasks窗体视图
@@ -178,28 +161,6 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
             }
         });
         return root;
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        LogUtils.i(TAG, "Fragment onAttach()...");
-
-        super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        LogUtils.i(TAG, "Fragment onDetach()...");
-
-        super.onDetach();
-        mListener = null;
     }
 
     @Override
