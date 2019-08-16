@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.bluesky.habit.activity.AlertDialogActivity;
+import com.bluesky.habit.service.ForegroundService;
 import com.bluesky.habit.util.LogUtils;
 
 import static com.bluesky.habit.data.Habit.HABIT_ID;
+import static com.bluesky.habit.service.ForegroundService.ACTION_TIMEUP;
 
 
 public class AlarmClockReceiver extends BroadcastReceiver {
@@ -37,11 +39,19 @@ public class AlarmClockReceiver extends BroadcastReceiver {
 
         String id = intent.getStringExtra(HABIT_ID);
 
+        //发送给ForegroundService
         Intent actIntent = new Intent();
+        actIntent.setClass(context, ForegroundService.class);
+        actIntent.setAction(ACTION_TIMEUP);
+        actIntent.putExtra(HABIT_ID, id);
+        context.startService(actIntent);
+
+        //发送给AlertDialogActivity
+/*        Intent actIntent = new Intent();
         actIntent.setClass(context, AlertDialogActivity.class);
         actIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         actIntent.putExtra(HABIT_ID, id);
-        context.startActivity(actIntent);
+        context.startActivity(actIntent);*/
 
     }
 

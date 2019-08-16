@@ -132,7 +132,8 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.8" />
 
-    <com.suke.widget.SwitchButton
+
+    <ch.ielse.view.SwitchView
         android:id="@+id/switch_completed"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

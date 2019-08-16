@@ -65,5 +65,7 @@
     <string name="title_toolbar_sub">好习惯不在多,在精!</string>
     <string name="des_menu_detail_edit">编辑</string>
     <string name="des_menu_detail_finish">完成</string>
+    <string name="des_menu_accept">已执行</string>
+    <string name="des_menu_skip">跳过</string>
 
 </resources>

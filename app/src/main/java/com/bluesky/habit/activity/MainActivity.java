@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     protected void onDestroy() {
         LogUtils.i(TAG, "Activity onDestroy()...");
         super.onDestroy();
+        unbindService(mConn);
     }
 
     ServiceConnection mConn = new ServiceConnection() {
@@ -136,7 +137,19 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         mTextMessage = findViewById(R.id.tv_message);
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        bindService(new Intent(this, ForegroundService.class), mConn, BIND_AUTO_CREATE);
+    }
 
+    /**
+     * 返回键执行HOME键的效果
+     */
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        startActivity(intent);
     }
 
     /**
@@ -148,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         LogUtils.i(TAG, "Activity onStart()...");
 
         super.onStart();
-        bindService(new Intent(this, ForegroundService.class), mConn, BIND_AUTO_CREATE);
+//        bindService(new Intent(this, ForegroundService.class), mConn, BIND_AUTO_CREATE);
 
     }
 
@@ -171,8 +184,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         LogUtils.i(TAG, "Activity onStop()...");
         super.onStop();
         //界面不可见,取消绑定服务,取消监听器
-        mPresenter.onDestory();//此方法释放了监听器
-        unbindService(mConn);
+//        mPresenter.onDestory();//放在了fragment自己的onStop中
+//        unbindService(mConn);
 
     }
 

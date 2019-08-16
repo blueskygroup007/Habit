@@ -64,6 +64,10 @@ public interface HabitListContract {
         void activateHabit(Habit activeHabit);
 
         void updateActiveHabitState();
+
+        void accept();
+
+        void skip();
     }
 
     interface View extends BaseView<Presenter> {
@@ -129,8 +133,15 @@ public interface HabitListContract {
         /**
          * 刷新单个Habit的Item显示
          */
-        void refreshHabitItem(String id,int currentSec);
+        void refreshHabitItem(String id, int currentSec);
 
         void updateHabits(List<Habit> habits);
+
+        void showTimeUpButtons(String id);
+
+        void hideTimeUpButtons();
+
+        void onHabitStarted(String id);
+        void onHabitStoped(String id);
     }
 }

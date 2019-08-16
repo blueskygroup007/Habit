@@ -1,13 +1,15 @@
 package com.bluesky.habit.habit_list;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.ArrayMap;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -15,11 +17,18 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.app.progresviews.ProgressWheel;
 import com.bluesky.habit.R;
-import com.bluesky.habit.habit_detail.HabitDetailActivity;
 import com.bluesky.habit.constant.AppConstant;
 import com.bluesky.habit.data.Habit;
+import com.bluesky.habit.habit_detail.HabitDetailActivity;
 import com.bluesky.habit.habit_list.dummy.DummyContent.DummyItem;
 import com.bluesky.habit.service.ForegroundService;
 import com.bluesky.habit.util.LogUtils;
@@ -29,14 +38,8 @@ import com.suke.widget.SwitchButton;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import ch.ielse.view.SwitchView;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -51,6 +54,8 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
     // TODO: Customize parameter argument names
     private static final String TAG = HabitFragment.class.getSimpleName();
     public static final String ARG_BINDER = "foregroundservice_binder";
+    private static final int TIME_UP = 1;
+    private static final int TIME_UP_FINISHED = 2;
     // TODO: Customize parameters
     private ForegroundService.ForeControlBinder mBinder;
     private HabitListContract.Presenter mPresenter;
@@ -71,6 +76,8 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
     private LinearLayout mHabitsView;
     private TextView mFilteringLabelView;
     private ListView mListView;
+    //    private Toolbar mToolbar;
+    private Menu mMenu;
 
 
     /**
@@ -96,6 +103,7 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
         super.onCreate(savedInstanceState);
 
+
         //Todo 这里必须有一个初始化的0.否则adapter中就会报空指针(必须让getCount是0)
         //todo 经查,是adapter忘记写setTag()方法了
         mAdapter = new HabitAdapter(new ArrayList<>(0), mItemListener);
@@ -110,6 +118,7 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
         //P的启动入口
         mPresenter.start();
     }
+
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -133,6 +142,8 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
         LogUtils.i(TAG, "Fragment onCreateView()...");
 
         View root = inflater.inflate(R.layout.fragment_habit_list, container, false);
+        //初始化toolbar
+//        mToolbar = root.findViewById(R.id.toolbar);
         //初始化任务列表视图
         mListView = root.findViewById(R.id.lv_task_list);
         mListView.setAdapter(mAdapter);
@@ -160,7 +171,43 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
                 mPresenter.loadHabits(false);
             }
         });
+
+
+        //初始化TimeUp的按钮
+//        ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
+        //使用OptionMenu填充toolbar
+        setHasOptionsMenu(true);
         return root;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+//        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.menu_fragment_list, menu);
+//        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+        menu.findItem(R.id.menu_timeup_accept).setVisible(false);
+        menu.findItem(R.id.menu_timeup_skip).setVisible(false);
+        mMenu = menu;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.menu_timeup_accept:
+                LogUtils.i(TAG, getString(R.string.des_menu_accept) + "---按钮被电击了...");
+                //TODO 发送消息去停止当前闹钟的Habit,且当前应该只允许一个Habit闹.其他应该等待
+                mPresenter.accept();
+
+                return true;
+            case R.id.menu_timeup_skip:
+                LogUtils.i(TAG, getString(R.string.des_menu_skip) + "---按钮被电击了...");
+                mPresenter.skip();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -180,7 +227,7 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
     @Override
     public void onStop() {
         LogUtils.i(TAG, "Fragment onStop()...");
-
+        onDestroy();
         super.onStop();
     }
 
@@ -325,6 +372,44 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
         mAdapter.replaceData(habits);
     }
 
+    @Override
+    public void showTimeUpButtons(String id) {
+        Message msg = Message.obtain();
+        msg.what = TIME_UP;
+        handler.sendMessage(msg);
+    }
+
+    @Override
+    public void hideTimeUpButtons() {
+        Message msg = Message.obtain();
+        msg.what = TIME_UP_FINISHED;
+        handler.sendMessage(msg);
+    }
+
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case TIME_UP:
+//                    ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+                    if (mMenu != null) {
+                        mMenu.findItem(R.id.menu_timeup_accept).setVisible(true);
+                        mMenu.findItem(R.id.menu_timeup_skip).setVisible(true);
+                    }
+                    break;
+                case TIME_UP_FINISHED:
+                    if (mMenu != null) {
+                        mMenu.findItem(R.id.menu_timeup_accept).setVisible(false);
+                        mMenu.findItem(R.id.menu_timeup_skip).setVisible(false);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     /**
      * 单独更新某个listview的item显示,并更新数据源
@@ -355,7 +440,6 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
                         holder.pb_time.setStepCountText(currentTime);
                     }
                 });
-
 //                mAdapter.updateItem(habit);
 
             } else {
@@ -367,6 +451,43 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
         }
     }
 
+    @Override
+    public void onHabitStarted(String id) {
+        onOpenOrCloseHabit(mListView, id, true);
+    }
+
+    @Override
+    public void onHabitStoped(String id) {
+        onOpenOrCloseHabit(mListView, id, false);
+    }
+
+    private void onOpenOrCloseHabit(ListView listView, String id, boolean onOff) {
+        if (listView != null) {
+            int first = listView.getFirstVisiblePosition();
+            int end = listView.getLastVisiblePosition();
+            int position = 0;
+            for (int i = first; i <= end; i++) {
+                if (id.equals(((Habit) listView.getItemAtPosition(i)).getId())) {
+                    position = i;
+                    break;
+                }
+            }
+            if (position >= first && position <= end) {
+                View view = listView.getChildAt(position - first);
+                HabitAdapter.ViewHolder holder = (HabitAdapter.ViewHolder) view.getTag();
+                holder.switch_completed.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (holder.switch_completed.isOpened() != onOff) {
+                            holder.switch_completed.setOpened(onOff);
+                        }
+                    }
+                });
+            } else {
+
+            }
+        }
+    }
 
     @Override
     public void setPresenter(HabitListContract.Presenter presenter) {
@@ -393,7 +514,7 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
         private List<Habit> mHabits;
         private ItemListener mItemListener;
-        private SwitchButton.OnCheckedChangeListener mSwitchButtonOnChangeListener;
+        public SwitchButton.OnCheckedChangeListener mSwitchButtonOnChangeListener;
 
         public HabitAdapter(List<Habit> habits, ItemListener itemListener) {
             mHabits = habits;
@@ -466,25 +587,6 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
             }
 
             final Habit habit = getItem(position);
-            mSwitchButtonOnChangeListener = new SwitchButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(SwitchButton view, boolean isChecked) {
-//                    //判断是不是点击触发的，当setChecked()时则不会触发此listener
-//                    //但是,因为SwitchButton是第三方控件,可能是因为继承于view,而没有实现ClickAble,所以isPressed不能返回true.
-                    //上面说的不对.因为ClickAble就是View的方法.原因不详,暂时无效
-//                    if (!view.isPressed()) {
-//                        LogUtils.i("SwitchButton is not Pressed...");
-//                        return;
-//                    }
-                    LogUtils.i("SwitchButton is Pressed...");
-                    if (isChecked) {
-                        mItemListener.onActivateTaskClick(habit);
-                    } else {
-                        mItemListener.onCompleteTaskClick(habit);
-                    }
-                }
-            };
-
 
             holder.pb_time.setDefText("当前:");
             long ms = habit.getAlarm().getAlarmCurrent();
@@ -492,11 +594,24 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
             holder.pb_time.setStepCountText(currentTime);
             holder.pb_time.setPercentage(0);
 
-            //先取消监听
-            holder.switch_completed.setOnCheckedChangeListener(null);
-            holder.switch_completed.setChecked(habit.isActive());
-            //设置状态后再开启监听
-            holder.switch_completed.setOnCheckedChangeListener(mSwitchButtonOnChangeListener);
+            LogUtils.i("TEST", "开始三次开关....");
+            holder.switch_completed.setOpened(habit.isActive());
+
+            holder.switch_completed.setOnStateChangedListener(new SwitchView.OnStateChangedListener() {
+                @Override
+                public void toggleToOn(SwitchView view) {
+                    LogUtils.i("TEST", "OnStateChangedListener--ON--isPressed=" + view.isPressed());
+                    view.toggleSwitch(true);
+                    mItemListener.onActivateTaskClick(habit);
+                }
+
+                @Override
+                public void toggleToOff(SwitchView view) {
+                    LogUtils.i("TEST", "OnStateChangedListener--OFF--isPressed=" + view.isPressed());
+                    view.toggleSwitch(false);
+                    mItemListener.onCompleteTaskClick(habit);
+                }
+            });
 
             holder.iv_icon.setImageResource(AppConstant.HABIT_ICONS[habit.getIcon()]);
             holder.tv_title.setText(habit.getTitle());
@@ -528,7 +643,7 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
         class ViewHolder {
             ConstraintLayout root;
             ProgressWheel pb_time;
-            SwitchButton switch_completed;
+            SwitchView switch_completed;
             ImageView iv_icon;
             TextView tv_title;
             TextView tv_description;
@@ -554,12 +669,14 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
         public void onCompleteTaskClick(Habit completedHabit) {
             //todo 这里只是启动和取消alarm了.还没有更新Repository,也没有更新列表(列表有分类显示:活动的,暂停的)
             //todo 也没有刷新列表
-            mPresenter.completeHabit(completedHabit);
+//            mPresenter.completeHabit(completedHabit);
+            mPresenter.cancelHabitAlarm(completedHabit);
         }
 
         @Override
         public void onActivateTaskClick(Habit activatedHabit) {
-            mPresenter.activateHabit(activatedHabit);
+//            mPresenter.activateHabit(activatedHabit);
+            mPresenter.startHabitAlarm(activatedHabit);
         }
     };
 

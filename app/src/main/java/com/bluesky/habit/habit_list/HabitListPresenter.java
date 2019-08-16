@@ -20,9 +20,10 @@ import java.util.Map;
 import static com.bluesky.habit.constant.AppConstant.FIRST_LOAD_ON_NETWORK;
 import static com.bluesky.habit.data.Habit.HABIT_ID;
 import static com.bluesky.habit.data.Habit.HABIT_INTERVAL;
+import static com.bluesky.habit.service.ForegroundService.ACTION_ACCEPT;
 import static com.bluesky.habit.service.ForegroundService.ACTION_PLAY;
+import static com.bluesky.habit.service.ForegroundService.ACTION_SKIP;
 import static com.bluesky.habit.service.ForegroundService.ACTION_STOP;
-import static com.bluesky.habit.service.ForegroundService.EXTRA_HABIT;
 
 /**
  * @author BlueSky
@@ -46,38 +47,38 @@ public class HabitListPresenter implements HabitListContract.Presenter {
         }
 
         @Override
-        public void onHabitStarted() {
+        public void onHabitStarted(String id) {
             LogUtils.d(TAG, "HabitStarted回调了...");
+            mView.onHabitStarted(id);
+        }
+
+        @Override
+        public void onHabitPaused(String id) {
 
         }
 
         @Override
-        public void onHabitPaused() {
-
+        public void onHabitStopped(String id) {
+            mView.onHabitStoped(id);
         }
 
         @Override
-        public void onHabitStopped() {
-
+        public void onHabitAccepted(String id) {
+            mView.hideTimeUpButtons();
         }
 
         @Override
-        public void onHabitAccepted() {
-
+        public void onHabitSkipped(String id) {
+            mView.hideTimeUpButtons();
         }
 
         @Override
-        public void onHabitSkipped() {
-
+        public void onHabitTimeUp(String id) {
+            mView.showTimeUpButtons(id);
         }
 
         @Override
-        public void onHabitTimeUp() {
-
-        }
-
-        @Override
-        public void onHabitsChanged() {
+        public void onHabitsChanged(String id) {
             loadHabits(false, true);
         }
     };
@@ -112,7 +113,6 @@ public class HabitListPresenter implements HabitListContract.Presenter {
         intent.putExtra(HABIT_ID, habit.getId());
         intent.putExtra(HABIT_INTERVAL, habit.getAlarm().getAlarmInterval());
         mContext.startService(intent);
-
     }
 
     @Override
@@ -272,6 +272,22 @@ public class HabitListPresenter implements HabitListContract.Presenter {
         for (Map.Entry<String, Integer> entry : activeHabitList.entrySet()) {
             mView.refreshHabitItem(entry.getKey(), entry.getValue());
         }
+    }
+
+    @Override
+    public void accept() {
+        mView.hideTimeUpButtons();
+        Intent intent = new Intent(mContext, ForegroundService.class);
+        intent.setAction(ACTION_ACCEPT);
+        mContext.startService(intent);
+    }
+
+    @Override
+    public void skip() {
+        mView.hideTimeUpButtons();
+        Intent intent = new Intent(mContext, ForegroundService.class);
+        intent.setAction(ACTION_SKIP);
+        mContext.startService(intent);
     }
 
     @Override

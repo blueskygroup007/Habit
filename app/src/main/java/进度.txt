@@ -42,6 +42,21 @@ Binder:
 * //todo Binder用来定义一些带参数的复杂方法.onStartCommand用来接收一些简单指令.
 * //todo 理念:终究是Activity向Service发请求.由Service来处理,并在处理后通知Activity.
 ------------------------------------------------------------------------------
+7月28日:
+-1.现在,toolbar上的accept和skip按钮,需要传送Habit对象给Presenter.谁来保存这个用Message传过来的Habit的Id.即当前闹钟到时的Habit
+***0.//todo "没有找到对应ID....."
+  分析:TimeUp后,只遍历了TimeUp回调.但是读秒进程没停止,Switch按钮的关闭又再次去disableHabit().
+
+1.//todo 将几个menu的图标文件从v21放到了drawable目录后,编译报错,为什么.
+
+2.尝试在Service收到TimeUp后,回调各个用户,并由用户分别处理.
+  ListFragment的处理是:发消息给自己(防止回调方法操作UI),显示toolbar按钮
+  //TODO 是否可以将Listener链表改为Messenger链表
+------------------------------------------------------------------------------
+7月26日:
+1.MainActivity的onBackPress()改为HOME键效果
+2.将MainActivity的BindService从onStart移至onCreate.
+------------------------------------------------------------------------------
 7月21日:
 1.Detail页面返回时,判断是否修改失败
 2.当后台service回调列表页面时,accept,skip,timeUp的处理
