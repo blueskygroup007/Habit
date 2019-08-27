@@ -168,12 +168,10 @@ public class ForegroundService extends Service {
                 mPresenter.disableHabit(intent.getStringExtra(HABIT_ID));
                 break;
             case ACTION_ACCEPT:
-                mPresenter.onAlarmAccept("noID");
-//                mPresenter.onAlarmAccept(intent.getStringExtra(HABIT_ID));
+                mPresenter.onAlarmAccept(intent.getStringExtra(HABIT_ID));
                 break;
             case ACTION_SKIP:
-                mPresenter.onAlarmSkip("noID");
-//                mPresenter.onAlarmSkip(intent.getStringExtra(HABIT_ID));
+                mPresenter.onAlarmSkip(intent.getStringExtra(HABIT_ID));
                 break;
             case ACTION_TIMEUP:
                 mPresenter.onAlarmTimeIsUp(intent.getStringExtra(HABIT_ID));

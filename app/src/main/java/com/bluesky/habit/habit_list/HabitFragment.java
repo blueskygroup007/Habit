@@ -26,6 +26,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.app.progresviews.ProgressWheel;
 import com.bluesky.habit.R;
+import com.bluesky.habit.activity.MainActivity;
 import com.bluesky.habit.constant.AppConstant;
 import com.bluesky.habit.data.Habit;
 import com.bluesky.habit.habit_detail.HabitDetailActivity;
@@ -41,6 +42,9 @@ import java.util.List;
 
 import ch.ielse.view.SwitchView;
 
+import static com.bluesky.habit.data.Habit.HABIT_ID;
+import static com.bluesky.habit.service.ForegroundService.ACTION_ACCEPT;
+import static com.bluesky.habit.service.ForegroundService.ACTION_SKIP;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -175,8 +179,9 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
         //初始化TimeUp的按钮
 //        ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
+
         //使用OptionMenu填充toolbar
-        setHasOptionsMenu(true);
+//        setHasOptionsMenu(true);
         return root;
     }
 
@@ -196,14 +201,14 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
         switch (item.getItemId()) {
             case R.id.menu_timeup_accept:
-                LogUtils.i(TAG, getString(R.string.des_menu_accept) + "---按钮被电击了...");
+                LogUtils.i(TAG, getString(R.string.des_menu_accept) + "---按钮被电击了...ID=" + item.getIntent().getStringExtra(HABIT_ID));
                 //TODO 发送消息去停止当前闹钟的Habit,且当前应该只允许一个Habit闹.其他应该等待
-                mPresenter.accept();
+                mPresenter.accept(item.getIntent().getStringExtra(HABIT_ID));
 
                 return true;
             case R.id.menu_timeup_skip:
                 LogUtils.i(TAG, getString(R.string.des_menu_skip) + "---按钮被电击了...");
-                mPresenter.skip();
+                mPresenter.skip(item.getIntent().getStringExtra(HABIT_ID));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -373,43 +378,48 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
     }
 
     @Override
-    public void showTimeUpButtons(String id) {
-        Message msg = Message.obtain();
-        msg.what = TIME_UP;
-        handler.sendMessage(msg);
+    public void showTimeUpButtons(String id, String title) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((MainActivity) getActivity()).showTimeUpButtons(id, title);
+            }
+        });
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mMenu != null) {
+                    MenuItem itemAccept = mMenu.findItem(R.id.menu_timeup_accept);
+                    itemAccept.setVisible(true);
+                    Intent intentAccept = new Intent(getActivity(), ForegroundService.class);
+                    intentAccept.setAction(ACTION_ACCEPT);
+                    intentAccept.putExtra(HABIT_ID, id);
+                    itemAccept.setIntent(intentAccept);
+                    itemAccept.setTitle(title);
+
+                    mMenu.findItem(R.id.menu_timeup_skip).setVisible(true);
+                    Intent intentSkip = new Intent(getActivity(), ForegroundService.class);
+                    intentSkip.setAction(ACTION_SKIP);
+                    intentSkip.putExtra(HABIT_ID, id);
+                    mMenu.findItem(R.id.menu_timeup_skip).setIntent(intentSkip);
+                }
+            }
+        });
     }
 
     @Override
-    public void hideTimeUpButtons() {
-        Message msg = Message.obtain();
-        msg.what = TIME_UP_FINISHED;
-        handler.sendMessage(msg);
+    public void hideTimeUpButtons(String id) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mMenu != null) {
+                    mMenu.findItem(R.id.menu_timeup_accept).setVisible(false);
+                    mMenu.findItem(R.id.menu_timeup_skip).setVisible(false);
+                }
+            }
+        });
     }
 
-
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case TIME_UP:
-//                    ((AppCompatActivity) getActivity()).getSupportActionBar().show();
-                    if (mMenu != null) {
-                        mMenu.findItem(R.id.menu_timeup_accept).setVisible(true);
-                        mMenu.findItem(R.id.menu_timeup_skip).setVisible(true);
-                    }
-                    break;
-                case TIME_UP_FINISHED:
-                    if (mMenu != null) {
-                        mMenu.findItem(R.id.menu_timeup_accept).setVisible(false);
-                        mMenu.findItem(R.id.menu_timeup_skip).setVisible(false);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
 
     /**
      * 单独更新某个listview的item显示,并更新数据源
@@ -432,12 +442,15 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
                 HabitAdapter.ViewHolder holder = (HabitAdapter.ViewHolder) view.getTag();
                 String currentTime = TimeUtils.secToTime(currentSec);
                 int interval = ((Habit) listView.getItemAtPosition(position)).getAlarm().getAlarmInterval();
+                final int pos = position;
                 holder.pb_time.post(new Runnable() {
                     @Override
                     public void run() {
                         //todo 防止currentSec为0
                         holder.pb_time.setPercentage(currentSec * 360 / interval);
                         holder.pb_time.setStepCountText(currentTime);
+                        //csdn上提到的google推荐的刷新item方法
+//                        mAdapter.getView(pos, view, listView);
                     }
                 });
 //                mAdapter.updateItem(habit);
@@ -478,9 +491,13 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
                 holder.switch_completed.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (holder.switch_completed.isOpened() != onOff) {
-                            holder.switch_completed.setOpened(onOff);
-                        }
+                        holder.switch_completed.setOpened(onOff);
+                    }
+                });
+                holder.pb_time.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        holder.pb_time.setPercentage(0);
                     }
                 });
             } else {

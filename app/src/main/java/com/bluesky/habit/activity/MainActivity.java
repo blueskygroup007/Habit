@@ -6,6 +6,8 @@ import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -133,11 +135,32 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
 
+        //去掉默认的title
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         mContainer = findViewById(R.id.fragment_container);
         mTextMessage = findViewById(R.id.tv_message);
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         bindService(new Intent(this, ForegroundService.class), mConn, BIND_AUTO_CREATE);
+    }
+
+    public void showTimeUpButtons(String id, String title) {
+        mTextMessage.setText(title);
+        MenuItem itemAccept=mToolbar.getMenu().findItem(R.id.menu_timeup_accept);
+        itemAccept.setVisible(true);
+        itemAccept.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        MenuItem itemSkip=mToolbar.getMenu().findItem(R.id.menu_timeup_skip);
+        itemSkip.setVisible(true);
+        itemSkip.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.clear();
+        MenuInflater inflater = new MenuInflater(this);
+        inflater.inflate(R.menu.menu_fragment_list, menu);
+        return true;
     }
 
     /**

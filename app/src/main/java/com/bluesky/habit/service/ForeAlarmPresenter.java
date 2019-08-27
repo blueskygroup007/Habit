@@ -80,15 +80,21 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
         //如果已经是激活状态,那么不执行
         if (!mActiveList.containsKey(id)) {
             mActiveList.put(id, currentSec);
-            startAlarm(id, interval - currentSec);
-            mMonitorMap.put(id, startMonitor(id, currentSec));
-            for (OnControlListener listener : mOnControlListeners
-            ) {
-                listener.onHabitStarted(id);
-            }
         } else {
-            LogUtils.e("已激活列表中没有该Habit.....ID=" + id);
+            LogUtils.e("已激活列表中已有该Habit,属于重启Alarm.....ID=" + id);
         }
+        startAlarm(id, interval - currentSec);
+        mMonitorMap.put(id, startMonitor(id, currentSec));
+        for (OnControlListener listener : mOnControlListeners
+        ) {
+            listener.onHabitStarted(id);
+        }
+    }
+
+    @Override
+    public void reactiveHabit(String id) {
+
+        activeHabit(id, 0, mRepository.getTaskWithId(id).getAlarm().getAlarmInterval());
     }
 
     @Override
@@ -109,8 +115,7 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
 
             }
         } else {
-            LogUtils.e("已激活列表中没有该Habit.....ID=" + id);
-
+            LogUtils.e("错误!已激活列表中没有该Habit,无法停止Alarm.....ID=" + id);
         }
     }
 
@@ -206,7 +211,14 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
     @Override
     public void onAlarmTimeIsUp(String id) {
         //一,停止相应的progress进度更新线程
-        stopMonitor(id);
+
+        if (mMonitorMap.containsKey(id)) {
+            if (stopMonitor(id)) {
+                mMonitorMap.remove(id);
+                stopAlarm(id);
+                mActiveList.remove(id);
+            }
+        }
 
         //二,回调各个观察者
         /**TODO 应该在这里检查:
@@ -254,6 +266,17 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
             listener.onHabitAccepted(id);
         }
         onTimeUpFinished();
+        reactiveHabit(id);
+    }
+
+    @Override
+    public void onAlarmSkip(String id) {
+        for (OnControlListener listener : mOnControlListeners
+        ) {
+            listener.onHabitSkipped(id);
+        }
+        onTimeUpFinished();
+        reactiveHabit(id);
     }
 
     /**
@@ -273,18 +296,10 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
                     mLock.notifyAll();
                 }
             }
-        }, 5, TimeUnit.SECONDS);
+        }, 0, TimeUnit.SECONDS);
+
 
     }
-
-    @Override
-    public void onAlarmSkip(String id) {
-        for (OnControlListener listener : mOnControlListeners
-        ) {
-            listener.onHabitSkipped(id);
-        }
-    }
-
 
     @Override
     public void stopAccService() {

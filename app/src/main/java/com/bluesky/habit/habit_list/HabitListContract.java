@@ -65,9 +65,9 @@ public interface HabitListContract {
 
         void updateActiveHabitState();
 
-        void accept();
+        void accept(String id);
 
-        void skip();
+        void skip(String id);
     }
 
     interface View extends BaseView<Presenter> {
@@ -137,9 +137,9 @@ public interface HabitListContract {
 
         void updateHabits(List<Habit> habits);
 
-        void showTimeUpButtons(String id);
+        void showTimeUpButtons(String id,String title);
 
-        void hideTimeUpButtons();
+        void hideTimeUpButtons(String id);
 
         void onHabitStarted(String id);
         void onHabitStoped(String id);

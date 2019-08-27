@@ -30,7 +30,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <TextView
+<!--    <TextView
         android:id="@+id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:text="@string/title_habit_list"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />-->
 
     <FrameLayout
         android:id="@+id/fragment_container"

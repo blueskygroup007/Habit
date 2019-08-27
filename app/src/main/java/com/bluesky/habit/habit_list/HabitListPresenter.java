@@ -64,17 +64,17 @@ public class HabitListPresenter implements HabitListContract.Presenter {
 
         @Override
         public void onHabitAccepted(String id) {
-            mView.hideTimeUpButtons();
+            mView.hideTimeUpButtons(id);
         }
 
         @Override
         public void onHabitSkipped(String id) {
-            mView.hideTimeUpButtons();
+            mView.hideTimeUpButtons(id);
         }
 
         @Override
         public void onHabitTimeUp(String id) {
-            mView.showTimeUpButtons(id);
+            mView.showTimeUpButtons(id,mRepository.getTaskWithId(id).getTitle());
         }
 
         @Override
@@ -275,18 +275,20 @@ public class HabitListPresenter implements HabitListContract.Presenter {
     }
 
     @Override
-    public void accept() {
-        mView.hideTimeUpButtons();
+    public void accept(String id) {
+        mView.hideTimeUpButtons(id);
         Intent intent = new Intent(mContext, ForegroundService.class);
         intent.setAction(ACTION_ACCEPT);
+        intent.putExtra(HABIT_ID, id);
         mContext.startService(intent);
     }
 
     @Override
-    public void skip() {
-        mView.hideTimeUpButtons();
+    public void skip(String id) {
+        mView.hideTimeUpButtons(id);
         Intent intent = new Intent(mContext, ForegroundService.class);
         intent.setAction(ACTION_SKIP);
+        intent.putExtra(HABIT_ID, id);
         mContext.startService(intent);
     }
 

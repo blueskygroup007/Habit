@@ -35,6 +35,13 @@ public interface ForeContract {
         void activeHabit(String id, int currentSec, int interval);
 
         /**
+         * 重启一个habit
+         *
+         * @param id
+         */
+        void reactiveHabit(String id);
+
+        /**
          * 取消一个habit
          */
         void disableHabit(String id);
