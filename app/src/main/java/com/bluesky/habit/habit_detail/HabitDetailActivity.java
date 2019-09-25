@@ -273,6 +273,7 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
             builder.setPositiveButton("保存", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
                     Toast.makeText(getApplicationContext(), "习惯已经被保存!", Toast.LENGTH_SHORT).show();
                     mPresenter.saveHabit();
                     HabitDetailActivity.this.finish();

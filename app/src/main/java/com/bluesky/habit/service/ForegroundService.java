@@ -154,11 +154,17 @@ public class ForegroundService extends Service {
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        if (intent == null) {
+            LogUtils.e(TAG, "前台服务启动. 但intent为空..");
+
+            return START_STICKY;
+        }
         String action = intent.getAction();
         switch (action) {
             case ACTION_PLAY:
                 LogUtils.d(TAG, "启动一个Habit...");
-                mPresenter.activeHabit(intent.getStringExtra(HABIT_ID), 0, intent.getIntExtra(HABIT_INTERVAL, 300));
+                mPresenter.activeHabit(intent.getStringExtra(HABIT_ID), 0, intent.getIntExtra(HABIT_INTERVAL, 15));
                 break;
             case ACTION_PAUSE:
 //                mPresenter.pauseAlarm(alarm);

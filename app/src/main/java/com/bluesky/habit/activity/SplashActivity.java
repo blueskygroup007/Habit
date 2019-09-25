@@ -46,7 +46,7 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
                 LogUtils.d("当前页面为:     " + position);
                 if (position == 1) {
                     if (!FIRST_RUN_SPLASH) {
-                        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                        Intent intent = new Intent(SplashActivity.this, Main2Activity.class);
                         startActivity(intent);
                         finish();
                     }
@@ -62,7 +62,7 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, Main2Activity.class);
         startActivity(intent);
         finish();
     }

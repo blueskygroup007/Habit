@@ -36,7 +36,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener, HabitFragment.OnListFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity{
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private Toolbar mToolbar;
@@ -50,27 +50,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     protected void onDestroy() {
         LogUtils.i(TAG, "Activity onDestroy()...");
         super.onDestroy();
-        unbindService(mConn);
+//        unbindService(mConn);
     }
-
-    ServiceConnection mConn = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            LogUtils.e(TAG, "onServiceConnected()...");
-
-            mBinder = (ForegroundService.ForeControlBinder) service;
-            //todo activity恢复,从service获取即时状态
-            initFragment();
-
-//            mPresenter.setService();
-        }
-
-        //绑定失败
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            LogUtils.e(TAG, "onServiceDisconnected()...");
-        }
-    };
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -116,8 +97,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             }
         }
         transaction.show(fragment).commit();
-        /*Alarm alarm=new Alarm(1, 1, 1, 1, 1, 1, 1);
-        Alarm alarm1=alarm.clone();*/
     }
 
     private HabitFragment mHabitFragment;
@@ -141,16 +120,18 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         mTextMessage = findViewById(R.id.tv_message);
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        bindService(new Intent(this, ForegroundService.class), mConn, BIND_AUTO_CREATE);
+//        bindService(new Intent(this, ForegroundService.class), mConn, BIND_AUTO_CREATE);
+
+        initFragment();
     }
 
     public void showTimeUpButtons(String id, String title) {
         mTextMessage.setText(title);
-        MenuItem itemAccept=mToolbar.getMenu().findItem(R.id.menu_timeup_accept);
+        MenuItem itemAccept = mToolbar.getMenu().findItem(R.id.menu_timeup_accept);
         itemAccept.setVisible(true);
         itemAccept.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        MenuItem itemSkip=mToolbar.getMenu().findItem(R.id.menu_timeup_skip);
+        MenuItem itemSkip = mToolbar.getMenu().findItem(R.id.menu_timeup_skip);
         itemSkip.setVisible(true);
         itemSkip.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
     }
@@ -215,8 +196,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private void initFragment() {
         //创建presenter
         //todo 这里的context使用了getApplicationContext
-        mHabitFragment = HabitFragment.newInstance(mBinder);
-        mPresenter = new HabitListPresenter(this, Injection.provideTasksRepository(getApplicationContext()), mBinder, mHabitFragment);
+        mHabitFragment = HabitFragment.newInstance();
+        mPresenter = new HabitListPresenter(this, Injection.provideTasksRepository(getApplicationContext()), mHabitFragment);
+
         mStatisticsFragment = StatisticsFragment.newInstance("param 1", "param 2");
         mDiscoverFragment = DiscoverFragment.newInstance("param 1", "param 2");
         mMineFragment = MineFragment.newInstance("param 1", "param 2");
@@ -236,13 +218,5 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
     }
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
 
-    }
-
-    @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
-
-    }
 }

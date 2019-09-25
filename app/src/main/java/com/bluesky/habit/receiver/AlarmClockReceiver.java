@@ -3,9 +3,7 @@ package com.bluesky.habit.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
-import com.bluesky.habit.activity.AlertDialogActivity;
 import com.bluesky.habit.service.ForegroundService;
 import com.bluesky.habit.util.LogUtils;
 

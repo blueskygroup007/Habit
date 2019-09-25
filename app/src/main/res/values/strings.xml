@@ -67,5 +67,8 @@
     <string name="des_menu_detail_finish">完成</string>
     <string name="des_menu_accept">已执行</string>
     <string name="des_menu_skip">跳过</string>
+    <string name="noti_alert_title">闹钟提示:</string>
+    <string name="noti_alert_content">单击此处去处理闹钟,或10秒后自动跳过!</string>
+    <string name="title_activity_main2">Main2Activity</string>
 
 </resources>

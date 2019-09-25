@@ -16,12 +16,11 @@ import java.util.List;
 public interface HabitListContract {
     interface Presenter extends BasePresenter {
 
-        /**
-         * 将连接前台service返回的Binder给P
-         *
-         * @param service
-         */
-        void setService(Binder service);
+        void register();
+
+        void unRegister();
+
+        void unBind();
 
         void startHabitAlarm(Habit habit);
 

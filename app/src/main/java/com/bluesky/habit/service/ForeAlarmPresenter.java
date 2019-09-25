@@ -1,7 +1,9 @@
 package com.bluesky.habit.service;
 
 import android.content.Context;
+import android.content.Intent;
 
+import com.bluesky.habit.activity.AlertDialogActivity;
 import com.bluesky.habit.data.Alarm;
 import com.bluesky.habit.data.Habit;
 import com.bluesky.habit.data.source.HabitsDataSource;
@@ -19,6 +21,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import static com.bluesky.habit.data.Habit.HABIT_ID;
+import static com.bluesky.habit.data.Habit.HABIT_TITLE;
 
 public class ForeAlarmPresenter implements ForeContract.ForePresenter {
     /**
@@ -220,6 +225,7 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
             }
         }
 
+
         //二,回调各个观察者
         /**TODO 应该在这里检查:
          *1.是否有多个活动alarm
@@ -232,15 +238,19 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
             @Override
             public void run() {
                 LogUtils.e("onAlarmTimeIsUp", "启动一个时间到线程!!!!!!!!!!!!!!");
-
+                //三,弹出alert对话框
+                Intent intent = new Intent(mContext, AlertDialogActivity.class);
+                intent.putExtra(HABIT_ID, id);
+                intent.putExtra(HABIT_TITLE, mRepository.getTaskWithId(id).getTitle());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION);
+                mContext.startActivity(intent);
                 synchronized (mLock) {
-
+                    condition = false;
                     for (OnControlListener listener : mOnControlListeners
                     ) {
                         listener.onHabitTimeUp(id);
                     }
                     LogUtils.e("onAlarmTimeIsUp", "通知所有观察者.时间到!!!!!!!!!!!!!!");
-                    condition = false;
                     while (!condition) {
                         try {
                             LogUtils.e("onAlarmTimeIsUp", "进入阻塞...........mLock=" + mLock);
@@ -248,14 +258,14 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-//                        mLock.notify();
+                        mLock.notify();
                     }
                     LogUtils.e("onAlarmTimeIsUp", "走出阻塞............");
+
                 }
             }
 
         });
-        //三,启动10秒自动skip计时
 
     }
 
@@ -293,7 +303,7 @@ public class ForeAlarmPresenter implements ForeContract.ForePresenter {
                 //TODO 重要:这里如果不加锁,那么notify()解锁就无效
                 synchronized (mLock) {
                     condition = true;
-                    mLock.notifyAll();
+                    mLock.notify();
                 }
             }
         }, 0, TimeUnit.SECONDS);

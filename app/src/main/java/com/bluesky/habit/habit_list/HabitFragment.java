@@ -2,11 +2,8 @@ package com.bluesky.habit.habit_list;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +14,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -26,11 +21,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.app.progresviews.ProgressWheel;
 import com.bluesky.habit.R;
+import com.bluesky.habit.activity.Main2Activity;
 import com.bluesky.habit.activity.MainActivity;
 import com.bluesky.habit.constant.AppConstant;
 import com.bluesky.habit.data.Habit;
 import com.bluesky.habit.habit_detail.HabitDetailActivity;
-import com.bluesky.habit.habit_list.dummy.DummyContent.DummyItem;
 import com.bluesky.habit.service.ForegroundService;
 import com.bluesky.habit.util.LogUtils;
 import com.bluesky.habit.util.TimeUtils;
@@ -47,12 +42,7 @@ import static com.bluesky.habit.service.ForegroundService.ACTION_ACCEPT;
 import static com.bluesky.habit.service.ForegroundService.ACTION_SKIP;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
- */
+
 public class HabitFragment extends Fragment implements HabitListContract.View {
 
     // TODO: Customize parameter argument names
@@ -61,7 +51,6 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
     private static final int TIME_UP = 1;
     private static final int TIME_UP_FINISHED = 2;
     // TODO: Customize parameters
-    private ForegroundService.ForeControlBinder mBinder;
     private HabitListContract.Presenter mPresenter;
     private HabitAdapter mAdapter;
 
@@ -93,11 +82,8 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static HabitFragment newInstance(ForegroundService.ForeControlBinder binder) {
+    public static HabitFragment newInstance() {
         HabitFragment fragment = new HabitFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(ARG_BINDER, binder);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -107,28 +93,12 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
         super.onCreate(savedInstanceState);
 
-
         //Todo 这里必须有一个初始化的0.否则adapter中就会报空指针(必须让getCount是0)
         //todo 经查,是adapter忘记写setTag()方法了
         mAdapter = new HabitAdapter(new ArrayList<>(0), mItemListener);
-        if (savedInstanceState != null) {
-            mBinder = (ForegroundService.ForeControlBinder) savedInstanceState.getSerializable(ARG_BINDER);
-        } else {
-            if (getArguments() != null) {
-                mBinder = (ForegroundService.ForeControlBinder) getArguments().getSerializable(ARG_BINDER);
-            }
-        }
 
-        //P的启动入口
-        mPresenter.start();
     }
 
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putSerializable(ARG_BINDER, mBinder);
-        super.onSaveInstanceState(outState);
-    }
 
     @Override
     public void onResume() {
@@ -137,7 +107,9 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
         super.onResume();
 
         //更新列表即时状态
-        mPresenter.updateActiveHabitState();
+        if (mPresenter != null) {
+            mPresenter.updateActiveHabitState();
+        }
     }
 
     @Override
@@ -172,90 +144,17 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mPresenter.loadHabits(false);
+                if (mPresenter != null) {
+                    mPresenter.loadHabits(false);
+                }
             }
         });
 
 
-        //初始化TimeUp的按钮
-//        ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
-
-        //使用OptionMenu填充toolbar
-//        setHasOptionsMenu(true);
         return root;
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-//        super.onCreateOptionsMenu(menu, inflater);
-        menu.clear();
-        inflater.inflate(R.menu.menu_fragment_list, menu);
-//        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
-        menu.findItem(R.id.menu_timeup_accept).setVisible(false);
-        menu.findItem(R.id.menu_timeup_skip).setVisible(false);
-        mMenu = menu;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.menu_timeup_accept:
-                LogUtils.i(TAG, getString(R.string.des_menu_accept) + "---按钮被电击了...ID=" + item.getIntent().getStringExtra(HABIT_ID));
-                //TODO 发送消息去停止当前闹钟的Habit,且当前应该只允许一个Habit闹.其他应该等待
-                mPresenter.accept(item.getIntent().getStringExtra(HABIT_ID));
-
-                return true;
-            case R.id.menu_timeup_skip:
-                LogUtils.i(TAG, getString(R.string.des_menu_skip) + "---按钮被电击了...");
-                mPresenter.skip(item.getIntent().getStringExtra(HABIT_ID));
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        LogUtils.i(TAG, "Fragment onPause()...");
-
-        super.onPause();
-    }
-
-    @Override
-    public void onStart() {
-        LogUtils.i(TAG, "Fragment onStart()...");
-
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        LogUtils.i(TAG, "Fragment onStop()...");
-        onDestroy();
-        super.onStop();
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.i(TAG, "Fragment onActivityCreated()...");
-
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
-    public void onDestroy() {
-        LogUtils.i(TAG, "Fragment onDestroy()...");
-
-        super.onDestroy();
-    }
-
-    @Override
-    public void onDestroyView() {
-        LogUtils.i(TAG, "Fragment onDestroyView()...");
-
-        super.onDestroyView();
-    }
 
     private void showNoTasksViews(String mainText, int iconRes, boolean showAddView) {
         mHabitsView.setVisibility(View.GONE);
@@ -379,10 +278,10 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
     @Override
     public void showTimeUpButtons(String id, String title) {
-        getActivity().runOnUiThread(new Runnable() {
+/*        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ((MainActivity) getActivity()).showTimeUpButtons(id, title);
+                ((Main2Activity) getActivity()).showTimeUpButtons(id, title);
             }
         });
         getActivity().runOnUiThread(new Runnable() {
@@ -404,12 +303,12 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
                     mMenu.findItem(R.id.menu_timeup_skip).setIntent(intentSkip);
                 }
             }
-        });
+        });*/
     }
 
     @Override
     public void hideTimeUpButtons(String id) {
-        getActivity().runOnUiThread(new Runnable() {
+/*        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (mMenu != null) {
@@ -417,7 +316,7 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
                     mMenu.findItem(R.id.menu_timeup_skip).setVisible(false);
                 }
             }
-        });
+        });*/
     }
 
 
@@ -509,23 +408,15 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
     @Override
     public void setPresenter(HabitListContract.Presenter presenter) {
         mPresenter = checkNotNull(presenter);
+        mPresenter.start();
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
-    }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mPresenter.unRegister();
+    }
 
     private class HabitAdapter extends BaseAdapter {
 
@@ -645,13 +536,6 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
                     mItemListener.onTaskClick(habit);
                 }
             });
-//            holder.root.setSelected(habit.isActive());
-//            holder.root.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    mItemListener.onTaskClick(habit);
-//                }
-//            });
 
             return convertView;
         }

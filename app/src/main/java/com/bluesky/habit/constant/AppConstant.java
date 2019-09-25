@@ -10,7 +10,12 @@ import com.bluesky.habit.R;
 public class AppConstant {
     //一些调试开关放在了这里
     public static final boolean FIRST_RUN_SPLASH = false;
-    public static final boolean FIRST_LOAD_ON_NETWORK = true;
+//    public static final boolean FIRST_LOAD_ON_NETWORK = false;
+
+    //sharedpreference
+    public static final String CONFIG_FIRST_LOAD_ON_NETWORK="config_first_load_on_network";
+    public static boolean FIRST_LOAD_ON_NETWORK=true;
+
 
     public static final int DEFAULT_ICON = 0;
     public static final int[] HABIT_ICONS = {R.drawable.ic_access_alarm_black_24dp,

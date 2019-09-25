@@ -1,8 +1,10 @@
 package com.bluesky.habit.habit_list;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Binder;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.util.Log;
 
 import com.bluesky.habit.data.Habit;
@@ -12,11 +14,13 @@ import com.bluesky.habit.service.ForeAlarmPresenter;
 import com.bluesky.habit.service.ForegroundService;
 import com.bluesky.habit.util.EspressoIdlingResource;
 import com.bluesky.habit.util.LogUtils;
+import com.bluesky.habit.util.PreferenceUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.bluesky.habit.constant.AppConstant.CONFIG_FIRST_LOAD_ON_NETWORK;
 import static com.bluesky.habit.constant.AppConstant.FIRST_LOAD_ON_NETWORK;
 import static com.bluesky.habit.data.Habit.HABIT_ID;
 import static com.bluesky.habit.data.Habit.HABIT_INTERVAL;
@@ -35,9 +39,24 @@ public class HabitListPresenter implements HabitListContract.Presenter {
     private static final String TAG = "HabitListPresenter";
     private final HabitsRepository mRepository;
     private HabitListContract.View mView;
-    private boolean mFirstLoad = true;
     private Context mContext;
     private ForegroundService.ForeControlBinder mBinder;
+
+    ServiceConnection mConn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            LogUtils.e(TAG, "onServiceConnected()...");
+            mBinder = (ForegroundService.ForeControlBinder) service;
+            mBinder.registerOnControlListener(mListener);
+        }
+
+        //绑定失败
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            LogUtils.e(TAG, "onServiceDisconnected()...");
+        }
+    };
+
     private ForeAlarmPresenter.OnControlListener mListener = new ForeAlarmPresenter.OnControlListener() {
         @Override
         public void onHabitProcessed(String id, int currentSec) {
@@ -74,7 +93,7 @@ public class HabitListPresenter implements HabitListContract.Presenter {
 
         @Override
         public void onHabitTimeUp(String id) {
-            mView.showTimeUpButtons(id,mRepository.getTaskWithId(id).getTitle());
+            mView.showTimeUpButtons(id, mRepository.getTaskWithId(id).getTitle());
         }
 
         @Override
@@ -84,25 +103,34 @@ public class HabitListPresenter implements HabitListContract.Presenter {
     };
 
 
-    public HabitListPresenter(Context context, HabitsRepository repository, ForegroundService.ForeControlBinder binder, HabitListContract.View view) {
+    public HabitListPresenter(Context context, HabitsRepository repository, HabitListContract.View view) {
         mRepository = repository;
         mView = view;
-        mBinder = binder;
         mContext = context;
         mView.setPresenter(this);
-        mBinder.registerOnControlListener(mListener);
+        context.bindService(new Intent(context, ForegroundService.class), mConn, Context.BIND_AUTO_CREATE);
     }
 
-    /**
-     * 手动设置Binder,暂时没有使用
-     *
-     * @param service
-     */
+
     @Override
-    public void setService(Binder service) {
-        //todo 这里强转,是否要判断一下
-        mBinder = (ForegroundService.ForeControlBinder) service;
-        mBinder.registerOnControlListener(mListener);
+    public void register() {
+        if (mBinder != null) {
+            mBinder.registerOnControlListener(mListener);
+        }
+    }
+
+    @Override
+    public void unRegister() {
+        if (mBinder != null) {
+            mBinder.unregisterOnControlListener(mListener);
+            mContext.unbindService(mConn);
+
+        }
+    }
+
+    @Override
+    public void unBind() {
+        mContext.unbindService(mConn);
     }
 
     @Override
@@ -128,11 +156,11 @@ public class HabitListPresenter implements HabitListContract.Presenter {
     @Override
     public void loadHabits(boolean forceUpdate) {
         //首次加载时,强制网络加载
-        if (!FIRST_LOAD_ON_NETWORK) {
-            mFirstLoad = false;
+        if (FIRST_LOAD_ON_NETWORK) {
+            PreferenceUtils.putBoolean(CONFIG_FIRST_LOAD_ON_NETWORK, false);
         }
-        loadHabits(forceUpdate || mFirstLoad, true);
-        mFirstLoad = false;
+        loadHabits(forceUpdate || FIRST_LOAD_ON_NETWORK, true);
+        FIRST_LOAD_ON_NETWORK = false;
     }
 
 
@@ -268,9 +296,11 @@ public class HabitListPresenter implements HabitListContract.Presenter {
 
     @Override
     public void updateActiveHabitState() {
-        Map<String, Integer> activeHabitList = mBinder.getActiveHabitList();
-        for (Map.Entry<String, Integer> entry : activeHabitList.entrySet()) {
-            mView.refreshHabitItem(entry.getKey(), entry.getValue());
+        if (mBinder != null) {
+            Map<String, Integer> activeHabitList = mBinder.getActiveHabitList();
+            for (Map.Entry<String, Integer> entry : activeHabitList.entrySet()) {
+                mView.refreshHabitItem(entry.getKey(), entry.getValue());
+            }
         }
     }
 
@@ -297,34 +327,4 @@ public class HabitListPresenter implements HabitListContract.Presenter {
         loadHabits(false);
     }
 
-//    @Override
-//    public void updateActiveHabitState() {
-//        List<Habit> activeHabits = mBinder.getActiveHabitList();
-//        if (activeHabits != null && activeHabits.size() > 0) {
-//            for (Habit habitNew :
-//                    activeHabits) {
-//                LogUtils.i(TAG, habitNew.toString());
-//
-//                //方法一
-//                for (Habit habitOld :
-//                        mHabitToShow) {
-//                    if (habitOld.getId().equals(habitNew.getId())) {
-//                        mHabitToShow.set(mHabitToShow.indexOf(habitOld), habitNew);
-//                        LogUtils.i(TAG, habitOld.toString());
-//                    }
-//                }
-//            }
-//            mView.updateHabits(mHabitToShow);
-//        }
-//    }
-
-    /**
-     * 注销监听器,因为该方法不在契约类中,且fragment声明的是Presenter.所以无法调用.
-     * 可以查看Xpressmusic源码有无必要析构,再决定是否调用
-     */
-    public void onDestory() {
-        if (mBinder != null) {
-            mBinder.unregisterOnControlListener(mListener);
-        }
-    }
 }

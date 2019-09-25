@@ -27,6 +27,8 @@ public class Habit implements Parcelable, Cloneable {
     @Ignore
     public static final String HABIT_ID = "habit_id";
     @Ignore
+    public static final String HABIT_TITLE = "habit_title";
+    @Ignore
     public static final String HABIT_INTERVAL = "habit_interval";
     //todo 主键必须有NonNull注解
     //todo 用final修饰成员变量,表示只允许在构造时给变量赋值,所以没有setXXX()方法
