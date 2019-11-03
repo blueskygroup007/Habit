@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
-
+        android:id="@+id/ll_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -23,352 +23,401 @@
             app:title="@string/title_toolbar"
             app:titleTextColor="@color/black" />
 
-        <LinearLayout
-            android:id="@+id/ll_group_name"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="196dp"
-            android:background="@color/palegreen"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical">
 
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:id="@+id/ll_title"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <ImageView
-
-                    android:id="@+id/iv_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_title_black_24dp" />
-
-                <TextView
-                    android:id="@+id/tv_title"
-                    style="@style/TextViewDescriptionStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/des_title" />
-
-                <EditText
-                    android:id="@+id/et_title"
-                    style="@style/EditTextContentStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/hint_title"
-                    android:lines="1"
-                    android:singleLine="true"
-                    
-                    tools:text="每天多喝水" />
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:id="@+id/ll_content"
-                android:layout_width="match_parent"
-                android:layout_height="128dp"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical">
-
-                    <ImageView
-
-                        android:id="@+id/iv_content"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/ic_content_black_24dp" />
-
-                    <TextView
-                        android:id="@+id/tv_content"
-                        style="@style/TextViewDescriptionStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/des_content" />
-                </LinearLayout>
-
-                <EditText
-                    android:id="@+id/et_content"
-                    style="@style/EditTextContentStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="top"
-                    android:hint="@string/hint_content"
-                    android:inputType="textMultiLine"
-                    android:minLines="5"
-                    android:scrollbarStyle="insideOverlay"
-                    android:scrollbars="vertical"
-                    android:scrollHorizontally="false"
-                    android:singleLine="false"
-                    tools:text="半小时喝水至少100毫升" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:background="@color/grey" />
-
-        <LinearLayout
-            android:id="@+id/ll_group_alarm"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/blanchedalmond"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:id="@+id/ll_interval"
-                android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <ImageView
-
-                    android:id="@+id/iv_interval"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_interval_black_24dp" />
-
-                <TextView
-                    android:id="@+id/tv_interval"
-                    style="@style/TextViewDescriptionStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/des_interval" />
-
-                <SeekBar
-                    android:id="@+id/seekBar"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="4"
-                    android:max="30"
-                    android:min="1"
-                    android:progress="1"
-                    android:progressDrawable="@drawable/seekbar_progress"
-                    android:thumb="@drawable/seekbar_thumb" />
-
-                <TextView
-                    android:id="@+id/tv_seekbar"
-                    android:layout_width="48dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="end"
-                    android:text="@string/des_minute"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/ll_alert"
-                android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <ImageView
-
-                    android:id="@+id/iv_alert"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_alert_black_24dp" />
-
-                <TextView
-                    android:id="@+id/tv_alert"
-                    style="@style/TextViewDescriptionStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/des_alert" />
+                android:layout_height="wrap_content">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="48dp"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
-                    <CheckBox
-                        android:id="@+id/cb_alert_ring"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:checked="true"
-                        android:text="@string/des_rb_ring" />
 
-                    <CheckBox
-                        android:id="@+id/cb_alert_vibrate"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/des_rb_vibrate" />
+                    <LinearLayout
+                        android:id="@+id/ll_group_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="196dp"
+                        android:background="@color/palegreen"
 
-                    <CheckBox
-                        android:id="@+id/cb_alert_light"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/des_rb_light" />
-                </LinearLayout>
+                        android:orientation="vertical">
 
-                <!--            <RadioGroup
-                                android:id="@+id/rg_alert"
+                        <LinearLayout
+                            android:id="@+id/ll_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="64dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+
+                                android:id="@+id/iv_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:srcCompat="@drawable/ic_title_black_24dp" />
+
+                            <TextView
+                                android:id="@+id/tv_title"
+                                style="@style/TextViewDescriptionStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/des_title" />
+
+                            <EditText
+                                android:id="@+id/et_title"
+                                style="@style/EditTextContentStyle"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:hint="@string/hint_title"
+                                android:lines="1"
+                                android:singleLine="true"
+
+                                tools:text="每天多喝水" />
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/ll_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="128dp"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical">
+
+                                <ImageView
+
+                                    android:id="@+id/iv_content"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    app:srcCompat="@drawable/ic_content_black_24dp" />
+
+                                <TextView
+                                    android:id="@+id/tv_content"
+                                    style="@style/TextViewDescriptionStyle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/des_content" />
+                            </LinearLayout>
+
+                            <EditText
+                                android:id="@+id/et_content"
+                                style="@style/EditTextContentStyle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="top"
+                                android:hint="@string/hint_content"
+                                android:inputType="textMultiLine"
+                                android:minLines="5"
+                                android:scrollbarStyle="insideOverlay"
+                                android:scrollbars="vertical"
+                                android:scrollHorizontally="false"
+                                android:singleLine="false"
+                                tools:text="半小时喝水至少100毫升" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@color/grey" />
+
+                    <LinearLayout
+                        android:id="@+id/ll_group_alarm"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/blanchedalmond"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/ll_interval"
+                            android:layout_width="match_parent"
+                            android:layout_height="64dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+
+                                android:id="@+id/iv_interval"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:srcCompat="@drawable/ic_interval_black_24dp" />
+
+                            <TextView
+                                android:id="@+id/tv_interval"
+                                style="@style/TextViewDescriptionStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/des_interval" />
+
+                            <SeekBar
+                                android:id="@+id/seekBar"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="4"
+                                android:max="30"
+                                android:min="1"
+                                android:progress="1"
+                                android:progressDrawable="@drawable/seekbar_progress"
+                                android:thumb="@drawable/seekbar_thumb" />
+
+                            <TextView
+                                android:id="@+id/tv_seekbar"
+                                android:layout_width="48dp"
+                                android:layout_height="wrap_content"
+                                android:gravity="end"
+                                android:text="@string/des_minute"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_alert"
+                            android:layout_width="match_parent"
+                            android:layout_height="64dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+
+                                android:id="@+id/iv_alert"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:srcCompat="@drawable/ic_alert_black_24dp" />
+
+                            <TextView
+                                android:id="@+id/tv_alert"
+                                style="@style/TextViewDescriptionStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/des_alert" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="48dp"
                                 android:orientation="horizontal">
 
-                                <RadioButton
-
-                                    android:id="@+id/rb_ring"
+                                <CheckBox
+                                    android:id="@+id/cb_alert_ring"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:checked="true"
                                     android:text="@string/des_rb_ring" />
 
-                                <RadioButton
-                                    android:id="@+id/rb_vibrate"
+                                <CheckBox
+                                    android:id="@+id/cb_alert_vibrate"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:text="@string/des_rb_vibrate" />
 
-                                <RadioButton
-                                    android:id="@+id/rb_light"
+                                <CheckBox
+                                    android:id="@+id/cb_alert_light"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:text="@string/des_rb_light" />
+                            </LinearLayout>
 
-                            </RadioGroup>-->
-            </LinearLayout>
-        </LinearLayout>
+                            <!--            <RadioGroup
+                                            android:id="@+id/rg_alert"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:orientation="horizontal">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:background="@color/grey" />
+                                            <RadioButton
 
-        <LinearLayout
-            android:id="@+id/ll_group_feedback"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/lightslategrey"
+                                                android:id="@+id/rb_ring"
+                                                android:layout_width="0dp"
+                                                android:layout_height="wrap_content"
+                                                android:layout_weight="1"
+                                                android:checked="true"
+                                                android:text="@string/des_rb_ring" />
 
-            android:orientation="vertical">
+                                            <RadioButton
+                                                android:id="@+id/rb_vibrate"
+                                                android:layout_width="0dp"
+                                                android:layout_height="wrap_content"
+                                                android:layout_weight="1"
+                                                android:text="@string/des_rb_vibrate" />
 
-            <LinearLayout
-                android:id="@+id/ll_accept"
-                android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                                            <RadioButton
+                                                android:id="@+id/rb_light"
+                                                android:layout_width="0dp"
+                                                android:layout_height="wrap_content"
+                                                android:layout_weight="1"
+                                                android:text="@string/des_rb_light" />
 
-                <ImageView
+                                        </RadioGroup>-->
+                        </LinearLayout>
+                    </LinearLayout>
 
-                    android:id="@+id/iv_accept"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_alert_black_24dp" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@color/grey" />
 
-                <TextView
-                    android:id="@+id/tv_accept"
-                    style="@style/TextViewDescriptionStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/des_accept" />
+                    <LinearLayout
+                        android:id="@+id/ll_group_feedback"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/lightslategrey"
 
-                <RadioGroup
-                    android:id="@+id/rg_accept"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/ll_accept"
+                            android:layout_width="match_parent"
+                            android:layout_height="64dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+
+                                android:id="@+id/iv_accept"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:srcCompat="@drawable/ic_alert_black_24dp" />
+
+                            <TextView
+                                android:id="@+id/tv_accept"
+                                style="@style/TextViewDescriptionStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/des_accept" />
+
+                            <RadioGroup
+                                android:id="@+id/rg_accept"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <RadioButton
+
+                                    android:id="@+id/rb_accept_shake"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:checked="true"
+                                    android:text="@string/des_rb_shake" />
+
+                                <RadioButton
+                                    android:id="@+id/rb_accept_turnoff"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/des_rb_turnoff" />
+
+                                <RadioButton
+                                    android:id="@+id/rb_accept_cover"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/des_rb_cover" />
+
+                            </RadioGroup>
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/ll_delay"
+                            android:layout_width="match_parent"
+                            android:layout_height="64dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+
+                                android:id="@+id/iv_delay"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:srcCompat="@drawable/ic_alert_black_24dp" />
+
+                            <TextView
+                                android:id="@+id/tv_delay"
+                                style="@style/TextViewDescriptionStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/des_delay" />
+
+                            <RadioGroup
+                                android:id="@+id/rg_delay"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <RadioButton
+
+                                    android:id="@+id/rb_delay_shake"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:checked="true"
+                                    android:text="@string/des_rb_shake" />
+
+                                <RadioButton
+                                    android:id="@+id/rb_delay_turnoff"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/des_rb_turnoff" />
+
+                                <RadioButton
+                                    android:id="@+id/rb_delay_cover"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/des_rb_cover" />
+
+                            </RadioGroup>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:background="@color/white">
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:background="@color/grey">
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:background="@color/black">
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/view_mark"
+
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <RadioButton
-
-                        android:id="@+id/rb_accept_shake"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:checked="true"
-                        android:text="@string/des_rb_shake" />
-
-                    <RadioButton
-                        android:id="@+id/rb_accept_turnoff"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/des_rb_turnoff" />
-
-                    <RadioButton
-                        android:id="@+id/rb_accept_cover"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/des_rb_cover" />
-
-                </RadioGroup>
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:id="@+id/ll_delay"
-                android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <ImageView
-
-                    android:id="@+id/iv_delay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_alert_black_24dp" />
-
-                <TextView
-                    android:id="@+id/tv_delay"
-                    style="@style/TextViewDescriptionStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/des_delay" />
-
-                <RadioGroup
-                    android:id="@+id/rg_delay"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <RadioButton
-
-                        android:id="@+id/rb_delay_shake"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:checked="true"
-                        android:text="@string/des_rb_shake" />
-
-                    <RadioButton
-                        android:id="@+id/rb_delay_turnoff"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/des_rb_turnoff" />
-
-                    <RadioButton
-                        android:id="@+id/rb_delay_cover"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/des_rb_cover" />
-
-                </RadioGroup>
-            </LinearLayout>
-        </LinearLayout>
-
+                    android:layout_height="match_parent"
+                    android:background="@color/transparent_half"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:orientation="vertical" />
+            </FrameLayout>
+        </ScrollView>
 
     </LinearLayout>
 </layout>

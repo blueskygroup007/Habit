@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.bluesky.habit.constant.AppConstant.CONFIG_FIRST_LOAD_ON_NETWORK;
-import static com.bluesky.habit.constant.AppConstant.FIRST_LOAD_ON_NETWORK;
 import static com.bluesky.habit.data.Habit.HABIT_ID;
 import static com.bluesky.habit.data.Habit.HABIT_INTERVAL;
 import static com.bluesky.habit.service.ForegroundService.ACTION_ACCEPT;
@@ -156,11 +155,11 @@ public class HabitListPresenter implements HabitListContract.Presenter {
     @Override
     public void loadHabits(boolean forceUpdate) {
         //首次加载时,强制网络加载
-        if (FIRST_LOAD_ON_NETWORK) {
+        boolean isFirstRun = PreferenceUtils.getBoolean(CONFIG_FIRST_LOAD_ON_NETWORK, true);
+        if (isFirstRun) {
             PreferenceUtils.putBoolean(CONFIG_FIRST_LOAD_ON_NETWORK, false);
         }
-        loadHabits(forceUpdate || FIRST_LOAD_ON_NETWORK, true);
-        FIRST_LOAD_ON_NETWORK = false;
+        loadHabits(forceUpdate || isFirstRun, true);
     }
 
 
@@ -191,6 +190,8 @@ public class HabitListPresenter implements HabitListContract.Presenter {
                 //用requestType过滤tasks
                 for (Habit habit :
                         habits) {
+
+                    LogUtils.i(TAG, "Habit=  " + habit.toString() );
                     mHabitToShow.add(habit);
                 }
                 //当前view可能无法处理UI更新

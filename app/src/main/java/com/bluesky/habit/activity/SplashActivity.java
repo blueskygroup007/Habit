@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import com.bluesky.habit.R;
 import com.bluesky.habit.util.LogUtils;
+import com.bluesky.habit.util.PreferenceUtils;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,7 +20,7 @@ import static com.bluesky.habit.constant.AppConstant.FIRST_RUN_SPLASH;
 
 public class SplashActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private int[] pages = {R.mipmap.page1, R.mipmap.page2, R.mipmap.page2, R.mipmap.page2};
+    private int[] pages = {R.mipmap.page1, R.mipmap.page2, R.mipmap.page2};
     private Button mBtnGotoMain;
 
     @Override
@@ -45,8 +46,8 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
             public void onPageSelected(int position) {
                 LogUtils.d("当前页面为:     " + position);
                 if (position == 1) {
-                    if (!FIRST_RUN_SPLASH) {
-                        Intent intent = new Intent(SplashActivity.this, Main2Activity.class);
+                    if (!PreferenceUtils.getBoolean(FIRST_RUN_SPLASH, true)) {
+                        Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
                         startActivity(intent);
                         finish();
                     }
@@ -62,7 +63,7 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(this, Main2Activity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
     }

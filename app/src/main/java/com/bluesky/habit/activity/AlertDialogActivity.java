@@ -37,7 +37,7 @@ import static com.bluesky.habit.service.ForegroundService.ACTION_SKIP;
 
 public class AlertDialogActivity extends Activity {
     public static final String TAG = AlertDialogActivity.class.getSimpleName();
-    private static final int RADIO_ACC = 17;//传感器幅度值常量
+    private static final int RADIO_ACC = 20;//传感器幅度值常量
     private AccelerometerLisenter mLisenter = new AccelerometerLisenter();
 
     Button btnOk;
@@ -222,14 +222,15 @@ public class AlertDialogActivity extends Activity {
             LogUtils.e(TAG, "停止震动");
 
         }
-
         Vibrator vibrator = (Vibrator) this.getSystemService(Service.VIBRATOR_SERVICE);
         if (!vibrator.hasVibrator()) {
             return;
         }
 
         if (on) {
-            vibrator.vibrate(500);
+            long[] pattern = {0, 400, 100, 400, 1000};
+
+            vibrator.vibrate(pattern,0);
         } else {
             vibrator.cancel();
         }

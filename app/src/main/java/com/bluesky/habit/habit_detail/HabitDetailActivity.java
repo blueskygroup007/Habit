@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
@@ -32,14 +34,18 @@ import com.bluesky.habit.util.LogUtils;
 public class HabitDetailActivity extends AppCompatActivity implements HabitDetailContract.View, CompoundButton.OnCheckedChangeListener {
 
     public static final String EXTRA_HABIT_ID = "TASK_ID";
+    private static final String TAG = HabitDetailActivity.class.getSimpleName();
     private Toolbar mToolbar;
+    private LinearLayout mViewMark;
+
     private String mHabitId;
     private HabitDetailPresenter mPresenter;
-    private boolean mIsModify = false;
     private ActivityDetailBinding mBinding;
 
     private boolean isForeground = true;
     private Habit mHabit;
+    private MenuItem mMenuItemEdit;
+    private MenuItem mMenuItemFinish;
 
     /**
      * //todo 任务:
@@ -69,6 +75,8 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
     }
 
     private void initView() {
+        mViewMark = findViewById(R.id.view_mark);
+
         //toolbar和左上角返回按钮
 //        mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mBinding.toolbar);
@@ -112,6 +120,18 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
         switch (item.getItemId()) {
             case android.R.id.home://左上角的返回按钮
                 onBackPressed();
+                break;
+            case R.id.menu_detail_edit:
+                mViewMark.setVisibility(View.GONE);
+                mMenuItemEdit.setVisible(false);
+                mMenuItemFinish.setVisible(true);
+                break;
+            case R.id.menu_detail_finish:
+                mViewMark.setVisibility(View.VISIBLE);
+                mViewMark.requestFocus();
+                mMenuItemEdit.setVisible(true);
+                mMenuItemFinish.setVisible(false);
+                break;
         }
         return true;
     }
@@ -124,17 +144,11 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
      */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (mIsModify) {
-            menu.findItem(R.id.menu_detail_edit).setVisible(true);
-            menu.findItem(R.id.menu_detail_finish).setVisible(false);
-            mIsModify = false;
-        } else {
-            menu.findItem(R.id.menu_detail_edit).setVisible(false);
-            menu.findItem(R.id.menu_detail_finish).setVisible(true);
-            mIsModify = true;
-        }
+        mMenuItemEdit = menu.findItem(R.id.menu_detail_edit).setVisible(true);
+        mMenuItemFinish = menu.findItem(R.id.menu_detail_finish).setVisible(false);
         return true;
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -154,8 +168,8 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
         mBinding.etContent.setText(habit.getDescription());
         Alarm alarm = habit.getAlarm();
         //求几分钟
-        mBinding.seekBar.setProgress(alarm.getAlarmInterval() / 1000 / 60);
-        mBinding.tvSeekbar.setText(alarm.getAlarmInterval() / 1000 / 60 + "分钟");
+        mBinding.seekBar.setProgress(alarm.getAlarmInterval() / 60);
+        mBinding.tvSeekbar.setText(alarm.getAlarmInterval() / 60 + "分钟");
         mBinding.cbAlertRing.setChecked(alarm.getWakeStyle() == AppConstant.WakeStyle.RING);
         mBinding.cbAlertLight.setChecked(alarm.getWakeStyle() == AppConstant.WakeStyle.LIGHT);
         mBinding.cbAlertVibrate.setChecked(alarm.getWakeStyle() == AppConstant.WakeStyle.VIBRATE);
@@ -263,6 +277,9 @@ public class HabitDetailActivity extends AppCompatActivity implements HabitDetai
     public void onBackPressed() {
         Habit habit = updateHabit(mHabit);
         //TODO 该写saveHabit方法了...
+        LogUtils.i(TAG, "元数据  " + mHabit.toString());
+        LogUtils.i(TAG, "新数据  " + habit.toString());
+
         if (habit.equals(mHabit)) {
             Toast.makeText(getApplicationContext(), "习惯没有改动...", Toast.LENGTH_SHORT).show();
             finish();

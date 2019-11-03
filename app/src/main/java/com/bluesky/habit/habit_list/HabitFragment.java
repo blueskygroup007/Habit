@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
@@ -108,6 +109,7 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
         //更新列表即时状态
         if (mPresenter != null) {
+            mPresenter.start();
             mPresenter.updateActiveHabitState();
         }
     }
@@ -153,7 +155,6 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
 
         return root;
     }
-
 
 
     private void showNoTasksViews(String mainText, int iconRes, boolean showAddView) {
@@ -340,11 +341,16 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
                 View view = listView.getChildAt(position - first);
                 HabitAdapter.ViewHolder holder = (HabitAdapter.ViewHolder) view.getTag();
                 String currentTime = TimeUtils.secToTime(currentSec);
+                //todo 测试代码
+                Habit habit = (Habit) listView.getItemAtPosition(position);
+                LogUtils.i(TAG, "Habit=  " + habit.toString());
+
                 int interval = ((Habit) listView.getItemAtPosition(position)).getAlarm().getAlarmInterval();
                 final int pos = position;
                 holder.pb_time.post(new Runnable() {
                     @Override
                     public void run() {
+                        holder.switch_completed.setOpened(true);
                         //todo 防止currentSec为0
                         holder.pb_time.setPercentage(currentSec * 360 / interval);
                         holder.pb_time.setStepCountText(currentTime);
@@ -502,8 +508,9 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
             holder.pb_time.setStepCountText(currentTime);
             holder.pb_time.setPercentage(0);
 
-            LogUtils.i("TEST", "开始三次开关....");
-            holder.switch_completed.setOpened(habit.isActive());
+//            holder.switch_completed.setOpened(habit.isActive());
+            holder.switch_completed.setOpened(false);//habit数据库中开关状态没用
+
 
             holder.switch_completed.setOnStateChangedListener(new SwitchView.OnStateChangedListener() {
                 @Override
@@ -532,8 +539,12 @@ public class HabitFragment extends Fragment implements HabitListContract.View {
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //打开编辑界面
-                    mItemListener.onTaskClick(habit);
+                    if (holder.switch_completed.isOpened()) {
+                        Toast.makeText(getContext(), R.string.tip_can_not_edit, Toast.LENGTH_SHORT).show();
+                    } else {
+                        //打开编辑界面
+                        mItemListener.onTaskClick(habit);
+                    }
                 }
             });
 

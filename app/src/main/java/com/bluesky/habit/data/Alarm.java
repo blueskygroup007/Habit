@@ -137,9 +137,6 @@ public class Alarm implements Parcelable, Cloneable {
         if (!(ringTone.equals(other.getRingTone()))) {
             return false;
         }
-//        if (!(increasingVolume == other.isIncreasingVolume())) {
-//            return false;
-//        }
         if (!(increasingVolume == other.isIncreasingVolume())) {
             return false;
         }
@@ -326,5 +323,24 @@ public class Alarm implements Parcelable, Cloneable {
         dest.writeByte((byte) (isActive ? 1 : 0));
         dest.writeInt(repeatDay);
         dest.writeInt(vibrateStyle);
+    }
+
+    @Override
+    public String toString() {
+        return "Alarm{" +
+                "numberCount=" + numberCount +
+                ", numberCurrent=" + numberCurrent +
+                ", alarmInterval=" + alarmInterval +
+                ", alarmCurrent=" + alarmCurrent +
+                ", alarmTotal=" + alarmTotal +
+                ", wakeStyle=" + wakeStyle +
+                ", acceptStyle=" + acceptStyle +
+                ", delayStyle=" + delayStyle +
+                ", ringTone='" + ringTone + '\'' +
+                ", increasingVolume=" + increasingVolume +
+                ", isActive=" + isActive +
+                ", repeatDay=" + repeatDay +
+                ", vibrateStyle=" + vibrateStyle +
+                '}';
     }
 }

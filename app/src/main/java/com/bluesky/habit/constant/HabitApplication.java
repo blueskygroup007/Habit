@@ -3,9 +3,14 @@ package com.bluesky.habit.constant;
 import android.app.Application;
 import android.content.Context;
 
-import com.bluesky.habit.util.PreferenceUtils;
+import androidx.multidex.MultiDex;
 
-import static com.bluesky.habit.constant.AppConstant.*;
+import com.tencent.bugly.crashreport.CrashReport;
+
+import cn.bmob.v3.Bmob;
+
+import static com.bluesky.habit.constant.AppConstant.BMOB_APP_ID;
+import static com.bluesky.habit.constant.AppConstant.BUGLY_APP_ID;
 
 
 /**
@@ -21,13 +26,14 @@ public class HabitApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = getApplicationContext();
-
-        getConfig();
+        //分包配置
+        MultiDex.install(this);
+        //初始化Bugly,最后一个参数是日志输出,发布时应设置为false
+        CrashReport.initCrashReport(getApplicationContext(), BUGLY_APP_ID, true);
+        //初始化Bmob
+        Bmob.initialize(this, BMOB_APP_ID);
     }
 
-    private void getConfig() {
-        FIRST_LOAD_ON_NETWORK = PreferenceUtils.getBoolean(CONFIG_FIRST_LOAD_ON_NETWORK, true);
-    }
 
     public static Context getContext() {
         return mContext;

@@ -14,6 +14,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.bluesky.habit.R;
@@ -24,8 +26,8 @@ public class Main2Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        /*Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);*/
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -40,22 +42,12 @@ public class Main2Activity extends AppCompatActivity {
     }
 
     private void initFragment() {
-        //原意图是:当Activity被回收重建时,用id来找回Fragment.弃用
-/*        HabitFragment habitFragment = (HabitFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
-        if (habitFragment == null) {
-            habitFragment = HabitFragment.newInstance();
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.add(R.id.contentFrame, habitFragment);
-            transaction.commit();
-        }*/
-
         HabitFragment habitFragment = HabitFragment.newInstance();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.add(R.id.contentFrame, habitFragment);
         transaction.commit();
 
         HabitListPresenter mPresenter = new HabitListPresenter(this, Injection.provideTasksRepository(getApplicationContext()), habitFragment);
-
     }
 
     /**
@@ -70,4 +62,27 @@ public class Main2Activity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main2, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_center:
+                Intent intent = new Intent(this, CenterActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.action_settings:
+
+                break;
+            case R.id.action_about:
+
+                break;
+            default:
+        }
+        return true;
+    }
 }

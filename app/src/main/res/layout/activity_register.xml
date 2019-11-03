@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/et_reg_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_et_reg_username" />
+
+    <EditText
+        android:id="@+id/et_reg_nickname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_et_reg_nickname" />
+
+    <EditText
+        android:id="@+id/et_reg_age"
+        android:inputType="number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_et_reg_age" />
+
+    <EditText
+        android:id="@+id/et_reg_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_et_reg_desc" />
+
+    <RadioGroup
+        android:id="@+id/rg_reg_gender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rb_reg_gender_male"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:checked="true"
+            android:text="@string/rb_reg_male" />
+
+        <RadioButton
+            android:id="@+id/rb_reg_gender_female"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rb_reg_female" />
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/et_reg_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_et_reg_password"
+        android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/et_reg_again_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_et_reg_again_password"
+        android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/et_reg_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_et_reg_email" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:text="@string/tv_reg_tip_email"
+        android:textColor="@color/colorAccent" />
+
+    <Button
+        android:id="@+id/btn_reg_register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_button_round"
+        android:text="@string/text_btn_reg" />
+    <Button
+        android:id="@+id/btn_reg_test"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_button_round"
+        android:text="@string/text_btn_test" />
+
+</LinearLayout>

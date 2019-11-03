@@ -7,6 +7,7 @@
     <drawable name="touchFeedback">#CFD8DC</drawable>
     <drawable name="transparent">@android:color/transparent</drawable>
 
+    <color name="transparent_half">#80FFFFFF</color>
 
     <color name="black">#000000</color><!--黑色 -->
     <color name="ivoryblack">#292421</color><!--象牙黑 -->
